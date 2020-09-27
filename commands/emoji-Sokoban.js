@@ -5,15 +5,19 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'playSokoban',
 	description: 'Starts a game of emoji-Sokoban',
-	args: false,
+	args: false,		// are arguments required? no.
 	level: 0,
 	usage: 'playSokoban [safe]',
 	async execute(msg, args){
 		
-		const filter = (reaction, user) => {
+		const reacFilter = (reaction, user) => {
 			//console.log('user:');
 			//console.log(user);
-			return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id;
+			if(args[0] && args[0].toLowerCase() === 'safe'){		// This may be an inneficient / inelegant way of handling this...
+				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id
+			} else {
+				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot
+			}
 		}
 		
 		var gameSys = {
@@ -90,7 +94,7 @@ module.exports = {
 			
 			while(gameSys.active){
 				//console.log('while loop...');
-				var collected = await gameMsg.awaitReactions(filter, {max: 1, time: 10000, errors: ['time'] })
+				var collected = await gameMsg.awaitReactions(reacFilter, {max: 1, time: 10000, errors: ['time'] })
 				//.then(collected => {
 					const reaction = collected.first();
 					//console.log('there was a reaction');
@@ -137,22 +141,20 @@ module.exports = {
 			}
 			console.log('** Game complete **');
 		}
-				
-		//var tempField = (':white_large_square:'.repeat(10)+'\n').repeat(5);
 		
 		var gameMsg;
 		let embedOb = new Discord.MessageEmbed()
-			.setTitle('Game window?')			// set the title of the field
-			.setColor(0xff0000)					// Set the color of the embed
+			.setTitle('Game window?')				// set the title of the field
+			.setColor(0xff0000)						// Set the color of the embed
 			.addField('Player', msg.author.username)
-			.setDescription(fieldGen());		// Set the main content of the embed
+			.setDescription(fieldGen());			// Set the main content of the embed
 		gameMsg = await msg.channel.send(embedOb);	// send the embed to the channel
 		
 		
 		gameMsg.react('\u2B05');	// left arrow
 		gameMsg.react('\u2B06');	// up arrow
 		gameMsg.react('\u2B07');	// down arrow
-		gameMsg.react('\u27A1');	// right arrow		await 
+		gameMsg.react('\u27A1');	// right arrow
 		
 		/*
 		gameMsg.awaitReactions(filter, {max: 1, time: 20000, errors: ['time'] })
@@ -200,7 +202,7 @@ module.exports = {
 			*/
 		gameLoop(gameMsg).catch(collected => {
 			gameSys.active = false;
-			console.log(collected);
+			console.log('*****  Game ended  *****');
 			msg.reply('It seems the game has ended... ');
 		});
 	}
