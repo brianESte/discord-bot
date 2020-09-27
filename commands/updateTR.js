@@ -7,6 +7,7 @@ module.exports = {
 	name: 'updateTrigResp',
 	description: 'Add/remove/update a trigger response pair',
 	args: true,
+	level: 1,
 	usage: '<trigger> [<response>]',
 	execute(msg, args) {
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {

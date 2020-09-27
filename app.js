@@ -1,4 +1,4 @@
-// my discoBot!
+// the main discord bot JS file
 // note: 'guild' means server
 // addbot: discord.com/oauth2/authorize?scope=bot&permissions=354368&client_id=752...
 
@@ -18,8 +18,6 @@ for(const file of cmdFiles){
 	client.commands.set(command.name, command);
 }
 
-var botMsgID = 0;
-var botMsg;
 var globalResps = {};
 
 fs.readFile(grFname, 'utf8', (err, data) => {
@@ -49,7 +47,6 @@ client.once('ready', () => {
     console.log(`Logged in a ${client.user.tag}!`);
 });
 
-// var botRepl;
 
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
@@ -57,32 +54,6 @@ client.on('message', async msg => {
 	var serv = msg.channel.guild;
 	const adminFilter = role => role.name.toLowerCase() === 'admin';
 
-	
-	//console.log('author info:');
-	//console.log(msg.author.username+': '+msg.author.id);
-	//console.log('roles info:');
-	/*
-	for(let [key, value] of msg.channel.guild.roles.cache){
-		if(value.name.toLowerCase() === 'admin'){
-			//console.log(value);
-			adminID = value.id;
-		}
-	}*/
-	
-	/*
-	console.log('member (author) info:');
-	console.log(serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter));
-	for(let [key, value] of serv.members.cache){
-		//console.log(value);
-		//if(value.roles.cache.has(adminID))	console.log(`${value.user.username} is an admin`);
-		
-		if(value.roles.cache.some(adminFilter)) console.log('admin.'); 
-	}*/
-	
-	// var chan = msg.channel;
-	
-	//console.log(chan.guild.members);
-	//console.log(msg);
 	console.log(`${msg.author.id}: ${msg.content}`);
 	/*
 	botRepl = await msg.channel.send('Message editi');
@@ -91,17 +62,12 @@ client.on('message', async msg => {
 	}, 5000);
 	*/
 	
-	//console.log(client.users.cache);
-	
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>')) msg.reply('Looks like you used the role-mention instead of the std mention!');
-	// from bluedrgnfire: &757964913523163187
+	// from bdf: &757964913523163187
 	
-	// if the message is a command to the bot...
+	// if the message starts by mentioning the bot...
 	if(msg.content.match(new RegExp('^<@!?'+clientID))){
-		if( msg.author.id != serv.ownerID && !serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter)){
-			return msg.reply('Apologies, you do not have the necessary clearance to command me');
-		}
 		
 		const args = msg.content.trim().split(/ +/).slice(1);	// remove spaces..
 		
@@ -121,22 +87,28 @@ client.on('message', async msg => {
 		}
 				// this section feels like it could be cleaner
 		const cmdName = args.shift(); //.toLowerCase();
-		console.log(`Command: ${cmdName} with args: ${args}`);	// what exactly does this do?
+		console.log(`Command: ${cmdName} with args: ${args}`);	// what exactly does the 'with' do?
 		
-		if(!client.commands.has(cmdName)) return;	// if no valid cmd given, return nothing.
+		if(!client.commands.has(cmdName)) return;	// if no valid cmd given, return nothing. Might change this to also display valid commands
 		
-		const command = client.commands.get(cmdName);
+		const cmd = client.commands.get(cmdName);
 		
-		if(command.args && !args.length){	// if the command requires arguments, but none are provided, say so.
+		// If the cmd has a non0 level, requester is not server owner, and also not an admin... 
+		if(cmd.level && (msg.author.id != serv.ownerID) && (!serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter))){
+			// Tell them they are not fit to use the chosen cmd.
+			return msg.reply('Apologies, you do not have the necessary clearance to use that command.');
+		}
+		
+		if(cmd.args && !args.length){	// if the command requires arguments, but none are provided, say so.
 			return msg.channel.send(`You did not provide enough arguments, ${msg.author}!`);
 		}
 		// command help message
 		if(args.length && args[0].toLowerCase() === 'help'){
-			return msg.channel.send(command.usage);
+			return msg.channel.send(cmd.usage);
 		}		
 		
 		try {						// finally, execute the requested command
-			command.execute(msg, args);
+			cmd.execute(msg, args);
 		} catch (error) {
 			console.error(error);
 			message.reply('there was an error trying to execute that command');

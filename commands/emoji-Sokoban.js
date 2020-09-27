@@ -3,11 +3,18 @@
 const Discord = require('discord.js');
 
 module.exports = {
-	name: 'showEmbed',
-	description: 'an embeded message example',
+	name: 'playSokoban',
+	description: 'Starts a game of emoji-Sokoban',
 	args: false,
-	usage: 'showEmbed',
+	level: 0,
+	usage: 'playSokoban [safe]',
 	async execute(msg, args){
+		
+		const filter = (reaction, user) => {
+			//console.log('user:');
+			//console.log(user);
+			return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id;
+		}
 		
 		var gameSys = {
 			player:{		// a 'movePlayer' function will be needed
@@ -146,14 +153,6 @@ module.exports = {
 		gameMsg.react('\u2B06');	// up arrow
 		gameMsg.react('\u2B07');	// down arrow
 		gameMsg.react('\u27A1');	// right arrow		await 
-		
-		
-		const filter = (reaction, user) => {
-			//console.log('user:');
-			//console.log(user);
-			return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id;
-		}
-		
 		
 		/*
 		gameMsg.awaitReactions(filter, {max: 1, time: 20000, errors: ['time'] })

@@ -5,6 +5,7 @@ module.exports = {
 	name: 'resetResponses',
 	description: 'Resets the local trigger-response object',
 	args: true,		// ill probably make the user confirm they wish to reset the trob
+	level: 1,
 	usage: 'resetResponses <confirmation>',
 	execute(msg, args) {
 		if(args[0].toLowerCase() != 'yes') return;

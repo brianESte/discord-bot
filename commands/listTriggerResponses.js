@@ -6,6 +6,7 @@ module.exports = {
 	name: 'listTR',
 	description: 'List / display trigger response pairs',
 	args: false,
+	level: 1,
 	usage: 'listTR',
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {

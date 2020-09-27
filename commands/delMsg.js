@@ -4,6 +4,7 @@ module.exports = {
 	name: 'delMsg',
 	description: 'Deletes messages determined by the arguments',
 	args: true,
+	level: 1,
 	usage: 'delMsg <quantity> [user:<user>] [bot]',
 	execute(msg, args){
 		if(!parseFloat(args[0])){
