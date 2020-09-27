@@ -1,0 +1,18 @@
+# stuff to ignore
+
+# Log files #
+#############
+*.log
+
+# config files #
+################
+*.json
+
+# test file
+###########
+bapp.js
+
+# certain folders... #
+######################
+guilds
+node_modules
