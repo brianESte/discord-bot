@@ -7,7 +7,10 @@ const {clientID, token, grFname} = require('./config.json');	// store sensitive/
 // This {a, b} = sth(); is an example of destructuring
 
 const Discord = require('discord.js');
-const client = new Discord.Client();
+
+const actOb = {presence:{activity:{name: 'you ;)', type: 'WATCHING'}}}
+
+const client = new Discord.Client(actOb);
 client.commands = new Discord.Collection();	// a collection of commands?
 const cmdFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -45,8 +48,9 @@ function check4Trigs(trob, content){
 
 client.once('ready', () => {
     console.log(`Logged in a ${client.user.tag}!`);
+    // client.user.setActivity('name', {type: 'WATCHING'}).catch(console.error);
+    // types: playing, streaming, listening, watching, custom_status (not for bots)
 });
-
 
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
@@ -54,7 +58,7 @@ client.on('message', async msg => {
 	var serv = msg.channel.guild;
 	const adminFilter = role => role.name.toLowerCase() === 'admin';
 
-	console.log(`${msg.author.id}: ${msg.content}`);
+	console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
 	/*
 	botRepl = await msg.channel.send('Message editi');
 	setTimeout(() => {
@@ -63,7 +67,9 @@ client.on('message', async msg => {
 	*/
 	
 	// if someone accidently uses the role-mention...
-	if(msg.content.startsWith('<@&752547390871044218>')) msg.reply('Looks like you used the role-mention instead of the std mention!');
+	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
+		msg.reply('Looks like you used the role-mention instead of the std mention!')
+	}
 	// from bdf: &757964913523163187
 	
 	// if the message starts by mentioning the bot...
@@ -144,5 +150,5 @@ client.on('message', async msg => {
 
 //console.log(client.presence);
 
-// Log in bot using the token
+// Log bot in using the token
 client.login(token)
