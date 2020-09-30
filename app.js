@@ -66,6 +66,9 @@ client.on('message', async msg => {
 	}, 5000);
 	*/
 	
+	// looking for user.presence info... :)
+	console.log(msg.author.presence.clientStatus);
+	
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
 		msg.reply('Looks like you used the role-mention instead of the std mention!')

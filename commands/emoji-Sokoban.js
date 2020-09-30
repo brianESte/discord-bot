@@ -5,15 +5,15 @@ const Discord = require('discord.js');
 module.exports = {
 	name: 'play', // Sokoban
 	description: 'Starts a game of emoji-Sokoban',
-	args: false,		// are arguments required? no.
+	args: true,		// size argument is required. safeplay arg is optional
 	level: 0,
-	usage: 'playSokoban [safe]',
+	usage: 'playSokoban <size> [safe]',	// size is small, medium, or large
 	async execute(msg, args){
 		
 		const reacFilter = (reaction, user) => {
 			//console.log('user:');
 			//console.log(user);
-			if(args[0] && args[0].toLowerCase() === 'safe'){		// This may be an inneficient / inelegant way of handling this...
+			if(args[1] && args[1].toLowerCase() === 'safe'){		// This may be an inneficient / inelegant way of handling this...
 				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id
 			} else {
 				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot
@@ -59,12 +59,12 @@ module.exports = {
 				cols: 10,
 				space: [[]],
 			},
-			iconList: {
-				0: ':black_large_square:',	// empty space
-				1: ':green_square:',		// wall
-				2: ':white_circle:',		// stone
-				3: ':radio_button:',		// button
-				4: ':jack_o_lantern:'},			// player
+			iconList: {		// std emoji names were used originally... 
+				0: '\u2B1B',			// empty space	\u2B1B
+				1: ':green_square:',	// wall		\u1F7E9
+				2: '\u26AA',			// stone	\u26AA	:white_circle:
+				3: ':radio_button:',	// button	\u1F518
+				4: ':jack_o_lantern:'},	// player	\u...
 			active: false,
 			setupGame(nStone){
 				// initialize field to 0's
@@ -150,6 +150,23 @@ module.exports = {
 					stone.dc = 0;
 				}
 			},
+			updateField(){
+				this.checkMovement();		// check movement, update deltas
+				// place 0's on player and stones,
+				this.field.space[this.player.r][this.player.c] = 0;
+				for(var stone of this.stones){
+					this.field.space[stone.r][stone.c] = 0;
+				}
+				this.updatePos();
+				// place button, stone, and player numbers on field
+				for(var button of this.buttons){
+					this.field.space[button.r][button.c] = 3;
+				}	
+				for(var stone of this.stones){
+					this.field.space[stone.r][stone.c] = 2;
+				}
+				this.field.space[this.player.r][this.player.c] = 4;
+			},
 			checkButtons(){		// a function to check the win condition
 				for(var button of this.buttons){
 					if(this.field.space[button.r][button.c] != 2) return
@@ -159,23 +176,7 @@ module.exports = {
 			}
 		}
 		
-		const updateField = () => {
-			gameSys.checkMovement();		// check movement, update deltas
-			// place 0's on player and stones,
-			gameSys.field.space[gameSys.player.r][gameSys.player.c] = 0;
-			for(var stone of gameSys.stones){
-				gameSys.field.space[stone.r][stone.c] = 0;
-			}
-			gameSys.updatePos()
-			// place button, stone, and player numbers on field
-			for(var button of gameSys.buttons){
-				gameSys.field.space[button.r][button.c] = 3;
-			}	
-			for(var stone of gameSys.stones){
-				gameSys.field.space[stone.r][stone.c] = 2;
-			}
-			gameSys.field.space[gameSys.player.r][gameSys.player.c] = 4;
-		}
+
 		
 		const field2Str = () => {		// convert the matrix of numbers to a string of emojis
 			var fieldString = '';
@@ -193,10 +194,8 @@ module.exports = {
 			console.log('*****  game started  *****');
 			
 			while(gameSys.active){
-				//console.log('begin while loop...');
 				var collected = await gameMsg.awaitReactions(reacFilter, {max: 1, time: 10000, errors: ['time'] })
 					const reaction = collected.first();
-					//console.log('there was a reaction');
 					switch(reaction.emoji.name){
 						case '\u2B05':			// left
 							//console.log('Left arrow');
@@ -222,7 +221,7 @@ module.exports = {
 							console.log('Somehow a reaction other than a cardinal dir was allowed through the filter...');
 					}
 					
-					updateField();
+					gameSys.updateField();
 					gameSys.checkButtons();
 					embedOb.setDescription(field2Str());	// update the embeded object
 					gameMsg.edit(embedOb);	// edit the embeded message
@@ -235,21 +234,49 @@ module.exports = {
 			console.log('** Game complete **');
 		}
 		
-		gameSys.setupGame(1);
-		updateField();
+		switch(args[0].toLowerCase()){
+			case 'large':
+				gameSys.field.rows = 8;
+				gameSys.field.cols = 14;
+				var nStone = Math.floor(Math.random()*4)+1;
+				break;
+			case 'medium':
+				gameSys.field.rows = 7;
+				gameSys.field.cols = 12;
+				var nStone = Math.floor(Math.random()*3)+1;
+				break;
+			case 'small':
+				gameSys.field.rows = 6;
+				gameSys.field.cols = 10;
+				var nStone = Math.floor(Math.random()*2)+1;
+				break;
+			default:
+				msg.reply('That is not a recognized size... [small, medium, large]\nThus you will be given a small field.');
+				var nStone = Math.floor(Math.random()*2)+1;
+		}
+		
+		gameSys.setupGame(nStone);
+		gameSys.updateField();
 		
 		var gameMsg;
 		let embedOb = new Discord.MessageEmbed()
-			.setTitle('Game window?')				// set the title of the field
+			.setTitle('Emoji Sokoban')				// set the title of the field
 			.setColor(0xff0000)						// Set the color of the embed
-			.addField('Player', msg.author.username)
-			.setDescription(field2Str());			// Set the main content of the embed
+			.addFields({name:'Player', value: msg.author.username, inline: true},
+					{name:'Controls', value:'Arrow Reactions', inline: true})
+			.setFooter('Credit for the idea in title link')
+			.setURL('https://www.youtube.com/watch?v=0fWdU8JCT6Y')	// set URL (appears in title)
+			.setDescription(field2Str());			// Set the main content of the embed (max 2048 chars)
+		
+		console.log(`field string length: ${field2Str().length}`);
+		// sum of all characters in embed may not exceed 6000, apparently.
 		gameMsg = await msg.channel.send(embedOb);	// send the embed to the channel
 		
 		gameMsg.react('\u2B05');	// left arrow
 		gameMsg.react('\u2B06');	// up arrow
 		gameMsg.react('\u2B07');	// down arrow
 		gameMsg.react('\u27A1');	// right arrow
+		gameMsg.react('\u267B');	// recycling symbol
 		
 		// start game
 		gameLoop(gameMsg).catch(collected => {
