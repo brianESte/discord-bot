@@ -20,7 +20,8 @@ module.exports = {
 			}
 		}
 		
-		class gStone {
+		// the button and stone classes... 
+		class gButton{		
 			constructor(newR, newC){
 				this._r = newR;
 				this._c = newC;
@@ -28,17 +29,24 @@ module.exports = {
 			get r(){ return this._r }
 			get c(){ return this._c }
 		}
-
-		class gButton extends gStone{		
-			constructor(newR, newC){
-				super(newR, newC);	// can i set the r,c here to consts?
+		class gStone extends gButton{	// it might be cleaner / more efficient to store these as objects
+			constructor(newR, newC){	// instead of classes... not sure.
+				super(newR, newC);
+				this._dr = 0;
+				this._dc = 0;
 			}
 			get r(){ return this._r }
 			get c(){ return this._c }
+			get dr(){ return this._dr }
+			get dc(){ return this._dc }
+			set r(r){	this._r = r;	}
+			set c(c){	this._c = c;	}
+			set dr(dr){	this._dr = dr;	}
+			set dc(dc){	this._dc = dc;	}
 		}
 		
 		var gameSys = {
-			player:{		// a 'movePlayer' function will be needed
+			player:{
 				id: 0,
 				c: 1, 
 				r: 1,
@@ -56,7 +64,7 @@ module.exports = {
 				1: ':green_square:',		// wall
 				2: ':white_circle:',		// stone
 				3: ':radio_button:',		// button
-				4: ':red_circle:'},			// player
+				4: ':jack_o_lantern:'},			// player
 			active: false,
 			setupGame(nStone){
 				// initialize field to 0's
@@ -86,7 +94,7 @@ module.exports = {
 					}
 				}
 				// set player location
-				while(!this.player.id){		// using player.id as a check var here. may repplace later				
+				while(!this.player.id){		// using player.id as a check var here. may replace later
 					this.player.r = Math.floor(Math.random()*this.field.rows)+1;
 					this.player.c = Math.floor(Math.random()*this.field.cols)+1;
 					if(!this.field.space[this.player.r][this.player.c]){
@@ -94,57 +102,82 @@ module.exports = {
 						this.field.space[this.player.r][this.player.c] = 4;
 					}
 				}
-
+				
 				// add boundary of 1's to play field
 				for(var r = 0; r < this.field.rows+2; r++){
 					for(var c = 0; c < this.field.cols+2; c++){
 						if(!r || !c || r === this.field.rows+1 || c === this.field.cols+1) this.field.space[r][c] = 1;
 					}
-				}		
-				return 'idk what this should return.. maybe a statement that the game is initialized';
+				}
 			},
-			/*
-			updatePlayerPos(){
-				// first check that the player wont go into a boundary
-				var newC = this.player.c + this.player.dc;
-				this.player.c = (newC && newC < this.field.cols+1) ? newC : this.player.c;
-				var newR = this.player.r - this.player.dr;
-				this.player.r = (newR && newR < this.field.rows+1) ? newR : this.player.r;
-				// later stones will be added and collision/contact checking will become necessary.
-				this.player.dc = 0;
-				this.player.dr = 0;
-			},*/
 			checkMovement(){
 				var pdR = this.player.dr, pdC = this.player.dc;
-				switch(this.field.space[this.player.r + pdR][this.player.c + pdC]){
-					case 1:
-						return;
-						console.log('conlog between return and break');
-						break;	// not sure if this break is necessary...
-					case 2:	// if walking into a stone
-						if(this.field.space[this.player.r + 2*pdR][this.player.c + 2*pdC] === 1){	// if stone against wall
-							return //?
-						} else {
-							// update stone pos
-							msg.channel.send('this would move the stone...');
+				//console.log(this.field.space[this.player.r + pdR][this.player.c + pdC]);
+				if(this.field.space[this.player.r + pdR][this.player.c + pdC] === 1){
+					this.player.dc = 0;
+					this.player.dr = 0;
+				} else if(this.field.space[this.player.r + pdR][this.player.c + pdC] === 2){
+					var s = 0;
+					for(s; sLen = this.stones.length, s < sLen; s++){		// search the stones for the right one..
+						if(this.stones[s].r === this.player.r + pdR && this.stones[s].c === this.player.c + pdC){
+							//console.log('stone found?');
+							break;
 						}
-					default:	// if 
-						this.player.r += pdR;
-						this.player.c += pdC;
+					}
+					if(this.field.space[this.stones[s].r + pdR][this.stones[s].c + pdC] === 1){	// if stone against wall
+						// this will need to be expanded to for stone against stone
+						this.player.dc = 0;
+						this.player.dr = 0;
+						return 
+					} else {
+						//console.log('update stone pos');
+						this.stones[s].dr = pdR;
+						this.stones[s].dc = pdC;
+					}
 				}
+			},
+			updatePos(){
+				// update player position
+				this.player.r += this.player.dr;		
+				this.player.c += this.player.dc;
 				this.player.dc = 0;
 				this.player.dr = 0;
+				// update stone positions
+				for(var stone of this.stones){		
+					stone.r += stone.dr;
+					stone.c += stone.dc;
+					stone.dr = 0;
+					stone.dc = 0;
+				}
+			},
+			checkButtons(){		// a function to check the win condition
+				for(var button of this.buttons){
+					if(this.field.space[button.r][button.c] != 2) return
+				}
+				this.active = false;
+				msg.channel.send('Winner! Congratulations!');
 			}
 		}
 		
 		const updateField = () => {
+			gameSys.checkMovement();		// check movement, update deltas
 			// place 0's on player and stones,
 			gameSys.field.space[gameSys.player.r][gameSys.player.c] = 0;
-			gameSys.checkMovement();		
+			for(var stone of gameSys.stones){
+				gameSys.field.space[stone.r][stone.c] = 0;
+			}
+			gameSys.updatePos()
+			// place button, stone, and player numbers on field
+			for(var button of gameSys.buttons){
+				gameSys.field.space[button.r][button.c] = 3;
+			}	
+			for(var stone of gameSys.stones){
+				gameSys.field.space[stone.r][stone.c] = 2;
+			}
 			gameSys.field.space[gameSys.player.r][gameSys.player.c] = 4;
 		}
 		
-		const field2Str = () => {	
+		const field2Str = () => {		// convert the matrix of numbers to a string of emojis
 			var fieldString = '';
 			for(var r = 0; r < gameSys.field.rows+2; r++){
 				for(var c = 0; c < gameSys.field.cols+2; c++){
@@ -160,42 +193,37 @@ module.exports = {
 			console.log('*****  game started  *****');
 			
 			while(gameSys.active){
+				//console.log('begin while loop...');
 				var collected = await gameMsg.awaitReactions(reacFilter, {max: 1, time: 10000, errors: ['time'] })
 					const reaction = collected.first();
 					//console.log('there was a reaction');
 					switch(reaction.emoji.name){
-						case '\u2B05':	// left
-							console.log('Left arrow');
+						case '\u2B05':			// left
+							//console.log('Left arrow');
 							gameMsg.reactions.cache.get('\u2B05').users.remove(msg.author.id);
-							//console.log(gameMsg.reactions.cache.get('\u2B05').users.cache.get(msg.author.id));
 							gameSys.player.dc = -1;
 							break;
-						case '\u2B06':	// up
-							console.log('Up arrow');
+						case '\u2B06':			// up
+							//console.log('Up arrow');
 							gameMsg.reactions.cache.get('\u2B06').users.remove(msg.author.id);
 							gameSys.player.dr = -1;	// negative because strings are displayed L->R, T->B
 							break;
-						case '\u2B07':	// down
-							console.log('Down arrow');
+						case '\u2B07':			// down
+							//console.log('Down arrow');
 							gameMsg.reactions.cache.get('\u2B07').users.remove(msg.author.id);
 							gameSys.player.dr = 1; // positive because strings are displayed L->R, T->B
 							break;
-						case '\u27A1':	// right
-							console.log('Right arrow');
+						case '\u27A1':			// right
+							//console.log('Right arrow');
 							gameMsg.reactions.cache.get('\u27A1').users.remove(msg.author.id);
 							gameSys.player.dc = 1;
 							break;
 						default:		// default?
 							console.log('Somehow a reaction other than a cardinal dir was allowed through the filter...');
 					}
-					//console.log(gameMsg.reactions.cache);
-					/*for(let [key, value] of gameMsg.reactions.cache){
-						if(value.count > 1){				// *** at some point i wil need to make this user specific
-							value.users.remove();
-						}
-					}*/
 					
 					updateField();
+					gameSys.checkButtons();
 					embedOb.setDescription(field2Str());	// update the embeded object
 					gameMsg.edit(embedOb);	// edit the embeded message
 				//}).catch(collected => {
@@ -207,7 +235,7 @@ module.exports = {
 			console.log('** Game complete **');
 		}
 		
-		gameSys.setupGame(2);
+		gameSys.setupGame(1);
 		updateField();
 		
 		var gameMsg;
@@ -223,53 +251,12 @@ module.exports = {
 		gameMsg.react('\u2B07');	// down arrow
 		gameMsg.react('\u27A1');	// right arrow
 		
-		/*
-		gameMsg.awaitReactions(filter, {max: 1, time: 20000, errors: ['time'] })
-			.then(collected => {
-				const reaction = collected.first();
-				//console.log(collected);
-				switch(reaction.emoji.name){
-					case '\u2B05':	// left
-						console.log('Left arrow');
-						gameMsg.reactions.cache.get('\u2B05').users.remove();
-						gameSys.player.dc = -1;
-						break;
-					case '\u2B06':	// up
-						console.log('Up arrow');
-						gameMsg.reactions.cache.get('\u2B06').users.remove();
-						gameSys.player.dr = 1;
-						break;
-					case '\u2B07':	// down
-						console.log('Down arrow');
-						gameMsg.reactions.cache.get('\u2B07').users.remove();
-						gameSys.player.dr = -1;
-						break;
-					case '\u27A1':	// right
-						console.log('Right arrow');
-						gameMsg.reactions.cache.get('\u27A1').users.remove();
-						gameSys.player.dc = 1;
-						break;
-					default:		// default?
-						console.log('Somehow a reaction other than a cardinal dir was allowed through the filter...');
-				}
-				//console.log(gameMsg.reactions.cache);
-				/*for(let [key, value] of gameMsg.reactions.cache){
-					if(value.count > 1){				// *** at some point i wil need to make this user specific
-						value.users.remove();
-					}
-				}///
-				
-				updateField();
-				embedOb.setDescription(field2Str());	// update the embeded object
-				gameMsg.edit(embedOb);	// edit the embeded message
-			}).catch(collected => {
-				console.log(collected);
-				msg.reply('something went wrong with the reaction catching... ');
-			});
-			*/
+		// start game
 		gameLoop(gameMsg).catch(collected => {
 			gameSys.active = false;
 			console.log('*****  Game ended  *****');
+			console.log('The last reaction collected was:');
+			console.log(collected);
 			msg.reply('It seems the game has ended... ');
 		});
 	}
