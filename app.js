@@ -59,15 +59,6 @@ client.on('message', async msg => {
 	const adminFilter = role => role.name.toLowerCase() === 'admin';
 
 	console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
-	/*
-	botRepl = await msg.channel.send('Message editi');
-	setTimeout(() => {
-		botRepl.edit('Message editing in progress');
-	}, 5000);
-	*/
-	
-	// looking for user.presence info... :)
-	console.log(msg.author.presence.clientStatus);
 	
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
@@ -80,7 +71,7 @@ client.on('message', async msg => {
 		
 		const args = msg.content.trim().split(/ +/).slice(1);	// remove spaces..
 		
-		if(!args.length){	// if no args are provided, display a summary of all commands
+		if(!args.length){	// if no args/cmd are provided, display a summary of all commands
 			var lenMax = 'Command name'.length;
 			var helpMsg = '```';
 			for(let cmd of client.commands.keys()){
@@ -111,9 +102,12 @@ client.on('message', async msg => {
 		if(cmd.args && !args.length){	// if the command requires arguments, but none are provided, say so.
 			return msg.channel.send(`You did not provide enough arguments, ${msg.author}!`);
 		}
-		// command help message
+		// If the user requests help with a command, send the command's help message
 		if(args.length && args[0].toLowerCase() === 'help'){
-			return msg.channel.send(cmd.usage);
+			// how to determine the msg sender's device within [mobile, web, desktop]
+			//console.log(msg.author.presence.clientStatus);
+			//if(msg.author.presence
+			return msg.channel.send('```'+cmd.helpMsg+'```');
 		}		
 		
 		try {						// finally, execute the requested command

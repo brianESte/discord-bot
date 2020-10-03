@@ -4,10 +4,12 @@ const fs = require('fs');
 
 module.exports = {
 	name: 'listTR',
-	description: 'List / display trigger response pairs',
+	description: 'List trigger response pairs',
 	args: false,
 	level: 1,
-	usage: 'listTR',
+	helpMsg: '\
+listTR\n\
+		List the local trigger response pairs. No argumnets required',
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {

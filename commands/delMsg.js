@@ -5,10 +5,15 @@ module.exports = {
 	description: 'Deletes messages determined by the arguments',
 	args: true,
 	level: 1,
-	usage: 'delMsg <quantity> [user:<user>] [bot]',
+	helpMsg: '\
+delMsg <quantity> [user:<user> | bot]\n\
+		Delete messages starting with the most recent one, filtered by the given arguments.\n\
+	<quantity>		Number of messages to delete.\n\
+	user:<user>		Target the specified user\'s messages\n\
+	<bot>			Target messages from bots',
 	execute(msg, args){
 		if(!parseFloat(args[0])){
-			return msg.reply('First argument must be anumber');
+			return msg.reply('First argument must be a number');
 		}
 		
 		// generate a flake/id from a date
@@ -18,7 +23,7 @@ module.exports = {
 				flakeBinarry.unshift(dateDec%2);
 				dateDec = Math.floor(dateDec/2);
 			}
-			flakeBinarry.push(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+			flakeBinarry.push(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
 			var flake = 0;
 			flakeBinarry.reverse();
 			for(var b = 0; fLen = flakeBinarry.length, b < fLen; b++){
@@ -37,9 +42,7 @@ module.exports = {
 			return true
 		}
 		
-		var chnl = msg.channel;
-		
-		var quantity = args[0];
+		var quantity = Math.round(args[0]);
 		var qualifiers = [true];
 		
 		// process the qualifiers:
@@ -66,7 +69,7 @@ module.exports = {
 			
 			while(delCt < quantity){
 				// this will return a promise, and then wait for it to be resolved
-				var messages = await chnl.messages.fetch({ limit: quantity, before:startMsgID });	
+				var messages = await msg.channel.messages.fetch({ limit: quantity, before:startMsgID });	
 				
 				console.log(`${messages.size} messages fetched`);
 				
@@ -83,7 +86,6 @@ module.exports = {
 			}
 			console.log('** Message deletion complete **');
 		}
-		
 		wLoop(quantity);	//.then(() => console.log('all done'));
 	}
 }

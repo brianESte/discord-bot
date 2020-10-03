@@ -3,20 +3,27 @@
 const Discord = require('discord.js');
 
 module.exports = {
-	name: 'play', // Sokoban
+	name: 'playSokoban', 		// command name: playSokoban
 	description: 'Starts a game of emoji-Sokoban',
-	args: true,		// size argument is required. safeplay arg is optional
+	args: true,			// size argument is required. safeplay arg is optional
 	level: 0,
-	usage: 'playSokoban <size> [safe]',	// size is small, medium, or large
+	helpMsg: '\
+playSokoban <size> [<safe>]\n\
+		Start a game of emoji-Sokoban. Objective is to move the stones so that all buttons are covered. Points may* be awarded to users in a future update\n\
+	<size>			{small, medium, large}: field size. Default is small\n\
+					small:  6x10, 1-2 stones\n\
+					medium: 7x12, 1-3 stones\n\
+					large:  8x14, 1-4 stones\n\
+	<safe>			safe argument allows only the caller to influence the game',
 	async execute(msg, args){
 		
 		const reacFilter = (reaction, user) => {
 			//console.log('user:');
 			//console.log(user);
 			if(args[1] && args[1].toLowerCase() === 'safe'){		// This may be an inneficient / inelegant way of handling this...
-				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id
+				return ['\u2B05','\u2B06','\u2B07','\u27A1','\u267B'].includes(reaction.emoji.name) && !user.bot && user.id == msg.author.id
 			} else {
-				return ['\u2B05','\u2B06','\u2B07','\u27A1'].includes(reaction.emoji.name) && !user.bot
+				return ['\u2B05','\u2B06','\u2B07','\u27A1','\u267B'].includes(reaction.emoji.name) && !user.bot
 			}
 		}
 		
@@ -61,8 +68,8 @@ module.exports = {
 			},
 			iconList: {		// std emoji names were used originally... 
 				0: '\u2B1B',			// empty space	\u2B1B
-				1: ':green_square:',	// wall		\u1F7E9
-				2: '\u26AA',			// stone	\u26AA	:white_circle:
+				1: '\u1F7E9',			// wall		\u1F7E9	:green_square:
+				2: ':white_circle:',	// stone	\u26AA	
 				3: ':radio_button:',	// button	\u1F518
 				4: ':jack_o_lantern:'},	// player	\u...
 			active: false,
@@ -217,8 +224,13 @@ module.exports = {
 							gameMsg.reactions.cache.get('\u27A1').users.remove(msg.author.id);
 							gameSys.player.dc = 1;
 							break;
+						case '\u267B':			// reset game option
+							gameMsg.reactions.cache.get('\u267B').users.remove(msg.author.id);
+							console.log('reset game button pressed');
+							// maybe write and call a reset function?
+							break;
 						default:		// default?
-							console.log('Somehow a reaction other than a cardinal dir was allowed through the filter...');
+							console.log('Somehow a reaction other than a cardinal dir or reset was allowed through the filter...');
 					}
 					
 					gameSys.updateField();
