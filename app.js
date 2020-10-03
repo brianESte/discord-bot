@@ -54,7 +54,7 @@ client.once('ready', () => {
 
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
-	
+		
 	var serv = msg.channel.guild;
 	const adminFilter = role => role.name.toLowerCase() === 'admin';
 
@@ -105,9 +105,12 @@ client.on('message', async msg => {
 		// If the user requests help with a command, send the command's help message
 		if(args.length && args[0].toLowerCase() === 'help'){
 			// how to determine the msg sender's device within [mobile, web, desktop]
-			//console.log(msg.author.presence.clientStatus);
-			//if(msg.author.presence
-			return msg.channel.send('```'+cmd.helpMsg+'```');
+			if(Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	// user is currently only on mobile...
+				console.log('mobile only');
+				return msg.channel.send(cmd.usage)
+			} else {
+				return msg.channel.send('```'+cmd.helpMsg+'```')
+			}
 		}		
 		
 		try {						// finally, execute the requested command

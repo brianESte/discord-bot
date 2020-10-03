@@ -7,6 +7,7 @@ module.exports = {
 	description: 'List trigger response pairs',
 	args: false,
 	level: 1,
+	usage: 'listTR',
 	helpMsg: '\
 listTR\n\
 		List the local trigger response pairs. No argumnets required',

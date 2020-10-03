@@ -3,10 +3,11 @@
 const Discord = require('discord.js');
 
 module.exports = {
-	name: 'playSokoban', 		// command name: playSokoban
+	name: 'play', 		// command name: playSokoban
 	description: 'Starts a game of emoji-Sokoban',
 	args: true,			// size argument is required. safeplay arg is optional
 	level: 0,
+	usage: 'playSokoban <size> [<safe>]',
 	helpMsg: '\
 playSokoban <size> [<safe>]\n\
 		Start a game of emoji-Sokoban. Objective is to move the stones so that all buttons are covered. Points may* be awarded to users in a future update\n\
@@ -68,10 +69,10 @@ playSokoban <size> [<safe>]\n\
 			},
 			iconList: {		// std emoji names were used originally... 
 				0: '\u2B1B',			// empty space	\u2B1B
-				1: '\u1F7E9',			// wall		\u1F7E9	:green_square:
-				2: ':white_circle:',	// stone	\u26AA	
-				3: ':radio_button:',	// button	\u1F518
-				4: ':jack_o_lantern:'},	// player	\u...
+				1: '\u2744',			// wall		discord only seems to recognize 4 digit unicode...
+				2: ':white_circle:',	// stone
+				3: ':radio_button:',	// button
+				4: ':jack_o_lantern:'},	// player
 			active: false,
 			setupGame(nStone){
 				// initialize field to 0's

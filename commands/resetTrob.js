@@ -6,8 +6,9 @@ module.exports = {
 	description: 'Resets the local trigger-response object',
 	args: true,		// ill probably make the user confirm they wish to reset the trob
 	level: 1,
+	usage: 'resetTR <yes>',
 	helpMsg: '\
-resetResponses <yes>\n\
+resetTR <yes>\n\
 		reset / clear the local trigger response pairs. Confirmation is required.\n\
 	<yes>		first argument must be "yes" to confirm the reset',
 	execute(msg, args) {

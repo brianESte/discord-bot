@@ -8,6 +8,7 @@ module.exports = {
 	description: 'Add/remove/update a trigger response pair',
 	args: true,
 	level: 1,
+	usage: 'updateTR "<trigger>" ["<response>"]',
 	helpMsg: '\
 updateTR "<trigger>" ["<response>"]\n\
 		Add / update/ remove a trigger response pair. If a response phrase is included, the pair will be added or if there is already a response for the given trigger, it will be overwritten with the new response. Omitting the response removes the pair indicated by the given trigger.\n\
