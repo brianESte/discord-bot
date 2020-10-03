@@ -28,38 +28,27 @@ playSokoban <size> [<safe>]\n\
 			}
 		}
 		
-		// the button and stone classes... 
-		class gButton{		
-			constructor(newR, newC){
-				this._r = newR;
-				this._c = newC;
+		// button and stone functions
+		const buttonFunc = (r, c) => {	// return a button object
+			return {
+				r: r,	c: c
 			}
-			get r(){ return this._r }
-			get c(){ return this._c }
 		}
-		class gStone extends gButton{	// it might be cleaner / more efficient to store these as objects
-			constructor(newR, newC){	// instead of classes... not sure. I may need an object factory..?
-				super(newR, newC);
-				this._dr = 0;
-				this._dc = 0;
+		const stoneFunc = (r, c) => {	// return a stone object
+			return {
+				r: r,	c: c,
+				dr: 0,	dc: 0,
+				r0: r,	c0: c
 			}
-			get r(){ return this._r }
-			get c(){ return this._c }
-			get dr(){ return this._dr }
-			get dc(){ return this._dc }
-			set r(r){	this._r = r;	}
-			set c(c){	this._c = c;	}
-			set dr(dr){	this._dr = dr;	}
-			set dc(dc){	this._dc = dc;	}
 		}
 		
 		var gameSys = {
 			player:{
-				id: 0,
-				c: 1, 
-				r: 1,
-				dc: 0,
-				dr: 0},
+				id: 0,			// id may be unnecessary
+				r: 1,	c: 1,
+				dr: 0,	dc: 0,
+				r0: 1,	c0: 1,
+			},
 			buttons: [],
 			stones: [],
 			field: {
@@ -88,7 +77,8 @@ playSokoban <size> [<safe>]\n\
 					var stoneR = Math.floor(Math.random()*(this.field.rows-2))+2;
 					var stoneC = Math.floor(Math.random()*(this.field.cols-2))+2;
 					if(!this.field.space[stoneR][stoneC]){
-						this.stones.push(new gStone(stoneR, stoneC));
+						//this.stones.push(new gStone(stoneR, stoneC));
+						this.stones.push(stoneFunc(stoneR, stoneC));
 						this.field.space[stoneR][stoneC] = 2;
 					}
 				}
@@ -97,7 +87,8 @@ playSokoban <size> [<safe>]\n\
 					var buttonR = Math.floor(Math.random()*this.field.rows)+1;
 					var buttonC = Math.floor(Math.random()*this.field.cols)+1;
 					if(!this.field.space[buttonR][buttonC]){
-						this.buttons.push(new gButton(buttonR, buttonC));
+						//this.buttons.push(new gButton(buttonR, buttonC));
+						this.buttons.push(buttonFunc(buttonR, buttonC));
 						this.field.space[buttonR][buttonC] = 3;
 					}
 				}
@@ -108,6 +99,8 @@ playSokoban <size> [<safe>]\n\
 					if(!this.field.space[this.player.r][this.player.c]){
 						this.player.id = 1;
 						this.field.space[this.player.r][this.player.c] = 4;
+						this.player.r0 = this.player.r;
+						this.player.c0 = this.player.c;
 					}
 				}
 				
@@ -181,6 +174,16 @@ playSokoban <size> [<safe>]\n\
 				}
 				this.active = false;
 				msg.channel.send('Winner! Congratulations!');
+			},
+			resetPos(){
+				for(var stone of this.stones){	// reset the stone's positions
+					this.field.space[stone.r][stone.c] = 0;
+					stone.r = stone.r0;
+					stone.c = stone.c0;
+				}
+				this.field.space[this.player.r][this.player.c] = 0;
+				this.player.r = this.player.r0;	// reset the player's positions
+				this.player.c = this.player.c0;
 			}
 		}
 		
@@ -202,7 +205,7 @@ playSokoban <size> [<safe>]\n\
 			console.log('*****  game started  *****');
 			
 			while(gameSys.active){
-				var collected = await gameMsg.awaitReactions(reacFilter, {max: 1, time: 10000, errors: ['time'] })
+				var collected = await gameMsg.awaitReactions(reacFilter, {max: 1, time: 15000, errors: ['time'] })
 					const reaction = collected.first();
 					switch(reaction.emoji.name){
 						case '\u2B05':			// left
@@ -228,7 +231,7 @@ playSokoban <size> [<safe>]\n\
 						case '\u267B':			// reset game option
 							gameMsg.reactions.cache.get('\u267B').users.remove(msg.author.id);
 							console.log('reset game button pressed');
-							// maybe write and call a reset function?
+							gameSys.resetPos();
 							break;
 						default:		// default?
 							console.log('Somehow a reaction other than a cardinal dir or reset was allowed through the filter...');
@@ -244,7 +247,7 @@ playSokoban <size> [<safe>]\n\
 				//	msg.reply('something went wrong with the reaction catching... ');
 				//});
 			}
-			console.log('** Game complete **');
+			console.log('*****  Game complete  *****');
 		}
 		
 		switch(args[0].toLowerCase()){
@@ -294,7 +297,7 @@ playSokoban <size> [<safe>]\n\
 		// start game
 		gameLoop(gameMsg).catch(collected => {
 			gameSys.active = false;
-			console.log('*****  Game ended  *****');
+			console.log('*****  Game ended with error(S) *****');
 			console.log('The last reaction collected was:');
 			console.log(collected);
 			msg.reply('It seems the game has ended... ');
