@@ -106,10 +106,9 @@ client.on('message', async msg => {
 		if(args.length && args[0].toLowerCase() === 'help'){
 			// how to determine the msg sender's device within [mobile, web, desktop]
 			if(Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	// user is currently only on mobile...
-				console.log('mobile only');
-				return msg.channel.send(cmd.usage)
-			} else {
-				return msg.channel.send('```'+cmd.helpMsg+'```')
+				return msg.channel.send(cmd.usage)				// send the cmd usage
+			} else {											// otherwise...
+				return msg.channel.send('```'+cmd.helpMsg+'```')	// send the full help message
 			}
 		}		
 		

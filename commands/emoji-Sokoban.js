@@ -38,7 +38,7 @@ playSokoban <size> [<safe>]\n\
 			get c(){ return this._c }
 		}
 		class gStone extends gButton{	// it might be cleaner / more efficient to store these as objects
-			constructor(newR, newC){	// instead of classes... not sure.
+			constructor(newR, newC){	// instead of classes... not sure. I may need an object factory..?
 				super(newR, newC);
 				this._dr = 0;
 				this._dc = 0;

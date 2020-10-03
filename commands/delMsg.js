@@ -1,4 +1,4 @@
-// delMsg
+// delMsg command
 
 module.exports = {
 	name: 'delMsg',
@@ -16,7 +16,7 @@ delMsg <quantity> [user:<user> | bot]\n\
 		if(!parseFloat(args[0])){
 			return msg.reply('First argument must be a number');
 		}
-		
+				
 		// generate a flake/id from a date
 		const date2flake = (dateDec) => {
 			var flakeBinarry = [];
@@ -33,25 +33,33 @@ delMsg <quantity> [user:<user> | bot]\n\
 			return flake
 		}
 		// filter function
-		var filter = (msg) => {
-			for(var criterion of qualifiers){ // var i = 0; i < 2; i++
-				if(!eval(criterion)){
-					console.log(criterion);
-					return false;
+		const filter = (msg) => {
+			for(var criterion of qualifiers){		// cycle through the qualifiers
+				if(!eval(criterion)){				// if a criterion evaluates to false..
+					console.log(criterion);			// log the criterion
+					return false;					// and return false
 				}
 			}
-			return true
+			return true								// otherwise return true
 		}
 		
-		var quantity = Math.round(args[0]);
+		// channel member search function
+		const cMemberSearch = name => {
+			for(var [id, m] of msg.channel.members){		// cycle through this channel's members
+				if(m.user.username === name)	return true	// if found, return true
+			}
+			return false							// if not found, return false
+		}
+		
+		var quantity = Math.round(args[0]);		// in case anyone tries to delete 1.6 messages...
 		var qualifiers = [true];
 		
 		// process the qualifiers:
 		for(var i = 1; len = args.length, i < len; i++){
-			if(args[i].toLowerCase().startsWith('user:')){
-				
-				// this will likely need a check that the user exists in the channel/server
-				
+			if(args[i].toLowerCase().startsWith('user:')){		// if trying to filter messages by user..
+				// check that the given user exists, and if not, return with a message that says so
+				if(!cMemberSearch(args[i].slice(5))) return msg.reply('username "'+args[i].slice(5)+'" not found.')
+				// if given username is found, add a condition to qualifiers
 				qualifiers.push('msg.author.username === "'+args[i].slice(5)+'"');
 			} else if(args[i].includes('bot')){
 				qualifiers.push('msg.author.bot')					
