@@ -18,6 +18,7 @@ for(const file of cmdFiles){
 	const command = require(`./commands/${file}`);
 	// set a new item in the collection
 	// with the key as the command name and the value as the exported module
+	// console.log(Object.keys(command).includes('name')); // (among other properties)
 	client.commands.set(command.name, command);
 }
 
@@ -58,7 +59,7 @@ client.on('message', async msg => {
 	var serv = msg.channel.guild;
 	const adminFilter = role => role.name.toLowerCase() === 'admin';
 
-	console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
+	// console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
 	
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
@@ -77,10 +78,10 @@ client.on('message', async msg => {
 			for(let cmd of client.commands.keys()){
 				if(cmd.length > lenMax) lenMax = cmd.length;
 			}
-			helpMsg += 'Command name'+' '.repeat(lenMax-12)+'   '+'Command description\n';
-			helpMsg += '-'.repeat(lenMax)+'-+-'+'-'.repeat(20)+'\n';
+			helpMsg += 'Command name'+' '.repeat(lenMax-12)+'  Level  Command description\n';
+			helpMsg += '-'.repeat(lenMax)+'-+'+'-'.repeat(5)+'+'+'-'.repeat(20)+'\n';
 			for(let [cmd, value] of client.commands){
-				helpMsg += cmd+' '.repeat(lenMax-cmd.length)+' : '+value.description+'\n';
+				helpMsg += cmd+' '.repeat(lenMax-cmd.length)+' :  '+value.level+'  : '+value.description+'\n';
 			}
 			msg.channel.send(helpMsg+'```');
 			return;

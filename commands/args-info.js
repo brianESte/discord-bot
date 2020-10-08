@@ -3,7 +3,7 @@
 
 module.exports = {
 	name: 'args-info',
-	description: 'Replies with information about the provided arguments',
+	description: 'A test cmd. Returns supplied arguments to user',
 	args: true,
 	level: 0,
 	usage: 'args-info <args>',
