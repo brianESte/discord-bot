@@ -9,8 +9,8 @@ module.exports = {
 	helpMsg: '\
 delMsg <quantity> [user:<user> | bot]\n\
 		Delete messages starting with the most recent one, filtered by the given arguments.\n\
-	<quantity>		Number of messages to delete.\n\
-	user:<user>		Target the specified user\'s messages\n\
+	<quantity>   	Number of messages to delete.\n\
+	user:<user>  	Target the specified user\'s messages\n\
 	<bot>			Target messages from bots',
 	execute(msg, args){
 		if(!parseFloat(args[0])){
