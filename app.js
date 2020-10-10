@@ -58,6 +58,10 @@ client.on('message', async msg => {
 		
 	var serv = msg.channel.guild;
 	
+	// check that the writer of the message is subject to @everyone... for lvl purposes...
+	for(var role of msg.channel.guild.members.cache.get(msg.author.id).roles.cache.values()){
+		if(role.name === '@everyone') console.log('role: @everyone')
+	}
 	// console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
 	
 	// if someone accidently uses the role-mention...
@@ -129,7 +133,7 @@ client.on('message', async msg => {
 			// console.log(`userLvl: ${userLvl}`);
 		}
 		// If the user requests help with a command, or attempts to use a command improperly,
-		// send the command's help message
+		// send the command's help message						*** considering removing the 'args' property... 
 		if((cmd.args && !args.length) || (args.length && args[0].toLowerCase() === 'help')){
 			// how to determine the msg sender's device within [mobile, web, desktop]
 			if(Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	// user is currently only on mobile...

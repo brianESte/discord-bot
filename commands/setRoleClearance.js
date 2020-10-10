@@ -8,12 +8,13 @@ module.exports = {
 	args: true,
 	level: 2,
 	usage: 'setClearance <level> <+|-> <role>',
-	helpMsg: 'setClearance <level> <+|-> <role>\n\
+	helpMsg: '\
+setClearance <level> <+|-> <role>\n\
 	Allows server owner to set a role\'s clearance level.\n\
-<level>		The clearance level whose roles will be updated\n\
-<+|->		+ assigns the given role to the given level\n\
+<level> 	The clearance level whose roles will be updated\n\
+<+|->   	+ assigns the given role to the given level\n\
 			- removes the given role from the given level\n\
-<role>		The role to be assigned/lose a level',
+<role>  	The role to be assigned/lose a level',
 	execute(msg, args){
 		// args: [1, '+', 'name', 'spaces', 'role']
 		
