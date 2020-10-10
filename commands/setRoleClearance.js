@@ -8,10 +8,15 @@ module.exports = {
 	args: true,
 	level: 2,
 	usage: 'setClearance <level> <+|-> <role>',
-	helpMsg: 'setClearance is used by the server owner to update which roles have which clearance levels',
+	helpMsg: 'setClearance <level> <+|-> <role>\n\
+	Allows server owner to set a role\'s clearance level.\n\
+<level>		The clearance level whose roles will be updated\n\
+<+|->		+ assigns the given role to the given level\n\
+			- removes the given role from the given level\n\
+<role>		The role to be assigned/lose a level',
 	execute(msg, args){
 		// args: [1, '+', 'name', 'spaces', 'role']
-		//console.log(msg.channel.guild.roles.cache);
+		
 		var level = args.shift();	// level should* be the first element
 		var plusMinus = args.shift();	// +/- should* be the second element
 		if(!parseFloat(level) || (plusMinus != '+' && plusMinus != '-'))	return msg.reply('Incorrect format, please see cmd help')

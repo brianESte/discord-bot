@@ -4,7 +4,7 @@
 
 const fs = require('fs');
 const {clientID, token, grFname} = require('./config.json');	// store sensitive/config data separately
-// This {a, b} = sth(); is an example of destructuring
+// This {a, b} = sth(); is an example of destructuring. destructured object names must match those in containine object
 
 const Discord = require('discord.js');
 
@@ -57,8 +57,7 @@ client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
 		
 	var serv = msg.channel.guild;
-	const adminFilter = role => role.name.toLowerCase() === 'admin';
-
+	
 	// console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
 	
 	// if someone accidently uses the role-mention...
@@ -87,48 +86,48 @@ client.on('message', async msg => {
 			return;
 		}
 				// this section feels like it could be cleaner
-		const cmdName = args.shift(); //.toLowerCase();
+		const cmdName = args.shift(); //.toLowerCase();		// do i want the commands to be case sensitive?
 		console.log(`Command: ${cmdName} with args: ${args}`);	// what exactly does the 'with' do?
 		
 		if(!client.commands.has(cmdName)) return;	// if no valid cmd given, return nothing. Might change this to also display valid commands
 		
 		const cmd = client.commands.get(cmdName);
 		
-		// get user role, (if any), get level from that
-		// compare max level to cmd level
-		var userLvl = 0;
-		if(msg.author.id === serv.ownerID){
-			userLvl = 2;		// may want to make this dynamixally the max known cmd lvl..
-		} else {// if author is server owner, skip all this.		
-			fs.readFile('./guilds/' + msg.guild.id + '.json', 'utf8', (err, data) => {
-				if(err) {
-					var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
-					fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
-						if(err) throw err;
-						console.log('New file created');
-					});
-				} else {
-					var clearances = JSON.parse(data).clearance;
-					for(const lvl in clearances){
-						// clearances[lvl].forEach(function(item, index, array){	// would it be better to loop this way?
-						for(let [roleID, role] of msg.channel.guild.members.cache.get(msg.author.id).roles.cache){
-							if(clearances[lvl].includes(role.name)){
-								userLvl = Math.max(userLvl, lvl);
-								break
-							}
-						}
-					}				
-				}
-			});
-		}
-		console.log(`userLvl: ${userLvl}`);
-		// If the cmd has a non0 level, requester is not server owner, and also not an admin... 
-		if(cmd.level > userLvl){
-			// && (msg.author.id != serv.ownerID) && (!serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter))){
-			// Tell them they are not fit to use the chosen cmd.
-			return msg.reply('Apologies, you do not have the necessary clearance to use that command.');
-		}
+		// If the cmd has a non-0 level, check the author's level...
+		if(cmd.level){
+			var userLvl = 0;
+			// get user role, (if any), get level from that
 		
+			if(msg.author.id === serv.ownerID){		// if the user is the server owner, she is automatically highest level 
+				userLvl = 2;		// may want to make this dynamixally the max known cmd lvl..
+			} else {								// if not the server owner.. what level is the user?
+				fs.readFile('./guilds/' + msg.guild.id + '.json', 'utf8', (err, data) => {
+					if(err) {
+						var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
+						fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
+							if(err) throw err;
+							console.log('New file created');
+						});
+					} else {
+						var clearances = JSON.parse(data).clearance;
+						for(const lvl in clearances){
+							// clearances[lvl].forEach(function(item, index, array){	// would it be better to loop this way?
+							for(let [roleID, role] of msg.channel.guild.members.cache.get(msg.author.id).roles.cache){
+								if(clearances[lvl].includes(role.name)){
+									userLvl = Math.max(userLvl, lvl);
+									break
+								}
+							}
+						}				
+					}
+				});
+				if(cmd.level > userLvl){		// compare cmd level to user level
+					// Tell them they are not fit to use the chosen cmd.
+					return msg.reply('Apologies, you do not have the necessary clearance to use that command.');
+				}
+			}
+			// console.log(`userLvl: ${userLvl}`);
+		}
 		// If the user requests help with a command, or attempts to use a command improperly,
 		// send the command's help message
 		if((cmd.args && !args.length) || (args.length && args[0].toLowerCase() === 'help')){
