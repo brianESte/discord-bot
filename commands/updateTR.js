@@ -16,8 +16,9 @@ updateTR "<trigger>" ["<response>"]\n\
 	<response>		The bot\'s response to the given trigger phrase',
 	execute(msg, args) {
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
-			if(err) {
-				fs.appendFile('./guilds/'+fname, "", (err) => {
+			if(err) {			// if for some reason the guild file was not yet initialized...
+				var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
+				fs.appendFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(emptyGob), (err) => {
 					if(err) throw err;
 					console.log('New file created');
 				});

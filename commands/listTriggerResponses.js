@@ -14,7 +14,8 @@ listTR\n\
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {
-				fs.appendFile('./guilds/'+msg.guild.id+'.json', "", (err) => {
+				var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
+				fs.appendFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(emptyGob), (err) => {
 					if(err) throw err;
 					console.log('New file created');
 				});

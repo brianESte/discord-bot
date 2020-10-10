@@ -18,7 +18,7 @@ for(const file of cmdFiles){
 	const command = require(`./commands/${file}`);
 	// set a new item in the collection
 	// with the key as the command name and the value as the exported module
-	// console.log(Object.keys(command).includes('name')); // (among other properties)
+	if(!Object.keys(command).includes('name')) continue // If for some reason i made a cmd stub, it should be omitted from the active command list
 	client.commands.set(command.name, command);
 }
 
@@ -94,17 +94,44 @@ client.on('message', async msg => {
 		
 		const cmd = client.commands.get(cmdName);
 		
+		// get user role, (if any), get level from that
+		// compare max level to cmd level
+		var userLvl = 0;
+		if(msg.author.id === serv.ownerID){
+			userLvl = 2;		// may want to make this dynamixally the max known cmd lvl..
+		} else {// if author is server owner, skip all this.		
+			fs.readFile('./guilds/' + msg.guild.id + '.json', 'utf8', (err, data) => {
+				if(err) {
+					var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
+					fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
+						if(err) throw err;
+						console.log('New file created');
+					});
+				} else {
+					var clearances = JSON.parse(data).clearance;
+					for(const lvl in clearances){
+						// clearances[lvl].forEach(function(item, index, array){	// would it be better to loop this way?
+						for(let [roleID, role] of msg.channel.guild.members.cache.get(msg.author.id).roles.cache){
+							if(clearances[lvl].includes(role.name)){
+								userLvl = Math.max(userLvl, lvl);
+								break
+							}
+						}
+					}				
+				}
+			});
+		}
+		console.log(`userLvl: ${userLvl}`);
 		// If the cmd has a non0 level, requester is not server owner, and also not an admin... 
-		if(cmd.level && (msg.author.id != serv.ownerID) && (!serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter))){
+		if(cmd.level > userLvl){
+			// && (msg.author.id != serv.ownerID) && (!serv.members.cache.get(msg.author.id).roles.cache.some(adminFilter))){
 			// Tell them they are not fit to use the chosen cmd.
 			return msg.reply('Apologies, you do not have the necessary clearance to use that command.');
 		}
 		
-		if(cmd.args && !args.length){	// if the command requires arguments, but none are provided, say so.
-			return msg.channel.send(`You did not provide enough arguments, ${msg.author}!`);
-		}
-		// If the user requests help with a command, send the command's help message
-		if(args.length && args[0].toLowerCase() === 'help'){
+		// If the user requests help with a command, or attempts to use a command improperly,
+		// send the command's help message
+		if((cmd.args && !args.length) || (args.length && args[0].toLowerCase() === 'help')){
 			// how to determine the msg sender's device within [mobile, web, desktop]
 			if(Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	// user is currently only on mobile...
 				return msg.channel.send(cmd.usage)				// send the cmd usage
@@ -125,7 +152,7 @@ client.on('message', async msg => {
 		
 		fs.readFile(fname, 'utf8', (err, data) => {
 			if(err) {
-				var emptyGob = {info:{},Trob:{}};
+				var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
 				fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
 					if(err) throw err;
 					console.log('New file created');
@@ -134,16 +161,10 @@ client.on('message', async msg => {
 				var localTrob = JSON.parse(data).Trob;
 				//console.log(localTrob);
 				var resp = check4Trigs(localTrob, msg.content);
-				if(resp){
-					msg.channel.send(resp);
-					// return 'local';
-				}
+				if(resp)	return msg.channel.send(resp)	// return if local response
 			}
 			var resp = check4Trigs(globalResps, msg.content);
-			if(resp){
-				msg.channel.send(resp);
-				// return 'global';
-			}
+			if(resp)	msg.channel.send(resp)	// global response
 		});	
 	}
 })
