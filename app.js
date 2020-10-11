@@ -59,9 +59,9 @@ client.on('message', async msg => {
 	var serv = msg.channel.guild;
 	
 	// check that the writer of the message is subject to @everyone... for lvl purposes...
-	for(var role of msg.channel.guild.members.cache.get(msg.author.id).roles.cache.values()){
-		if(role.name === '@everyone') console.log('role: @everyone')
-	}
+	//for(var role of msg.channel.guild.members.cache.get(msg.author.id).roles.cache.values()){
+	//	if(role.name === '@everyone') console.log('role: @everyone')
+	//}
 	// console.log(`${msg.author.id}: ${msg.content}`);	// for debugging purposes
 	
 	// if someone accidently uses the role-mention...

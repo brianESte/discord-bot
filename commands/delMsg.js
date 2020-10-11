@@ -13,10 +13,10 @@ delMsg <quantity> [user:<user> | bot]\n\
 user:<user>  	Target the specified user\'s messages\n\
 <bot>			Target messages from bots',
 	execute(msg, args){
-		if(!parseFloat(args[0])){
-			return msg.reply('First argument must be a number');
+		if(!parseFloat(args[0]) || parseFloat(args[0]) < 1){
+			return msg.reply('First argument must be a number greater than 0');
 		}
-				
+		
 		// generate a flake/id from a date
 		const date2flake = (dateDec) => {
 			var flakeBinarry = [];
@@ -33,7 +33,7 @@ user:<user>  	Target the specified user\'s messages\n\
 			return flake
 		}
 		// filter function
-		const filter = (msg) => {
+		const filter = msg => {
 			for(var criterion of qualifiers){		// cycle through the qualifiers
 				if(!eval(criterion)){				// if a criterion evaluates to false..
 					console.log(criterion);			// log the criterion
@@ -44,7 +44,7 @@ user:<user>  	Target the specified user\'s messages\n\
 		}
 		
 		// channel member search function
-		const cMemberSearch = name => {
+		const chMemberSearch = name => {
 			for(var [id, m] of msg.channel.members){		// cycle through this channel's members
 				if(m.user.username === name)	return true	// if found, return true
 			}
@@ -58,7 +58,7 @@ user:<user>  	Target the specified user\'s messages\n\
 		for(var i = 1; len = args.length, i < len; i++){
 			if(args[i].toLowerCase().startsWith('user:')){		// if trying to filter messages by user..
 				// check that the given user exists, and if not, return with a message that says so
-				if(!cMemberSearch(args[i].slice(5))) return msg.reply('username "'+args[i].slice(5)+'" not found.')
+				if(!chMemberSearch(args[i].slice(5))) return msg.reply('username "'+args[i].slice(5)+'" not found.')
 				// if given username is found, add a condition to qualifiers
 				qualifiers.push('msg.author.username === "'+args[i].slice(5)+'"');
 			} else if(args[i].includes('bot')){
@@ -70,15 +70,17 @@ user:<user>  	Target the specified user\'s messages\n\
 			}*/
 		}
 		
+		// asynchronous while loop
 		const wLoop = async quantity => {
 			var delCt = 0;
+			var delPromises = [];
 			// fake starting msg id:
 			var startMsgID = date2flake(new Date() - new Date(2015,0,1,1));
 			// Date(2015, 0, 1, 0) is the discord epoch
 			
 			while(delCt < quantity){
 				// this will return a promise, and then wait for it to be resolved
-				var messages = await msg.channel.messages.fetch({ limit: quantity, before:startMsgID });	
+				var messages = await msg.channel.messages.fetch({ limit: quantity, before:startMsgID });	// will it though?
 				
 				console.log(`${messages.size} messages fetched`);
 				
@@ -86,14 +88,15 @@ user:<user>  	Target the specified user\'s messages\n\
 					if(value.id < startMsgID) startMsgID = value.id
 					
 					if(filter(value)){	//value.author.id === authorID){
-						value.delete();
+						delPromises.push(value.delete());		// this also returns a promise. This is the promise I need to wait on for the final message
 						delCt++;
 						console.log(`Deleting message "${value.content}" from ${value.author.username}`);
 						if(delCt >= quantity) break;
 					}
 				}
 			}
-			console.log('** Message deletion complete **');
+			await Promise.all(delPromises);	//.then(() => {	console.log('*****  Message deletion complete  *****')	});
+			console.log('*****  Message deletion complete  *****');
 		}
 		wLoop(quantity);	//.then(() => console.log('all done'));
 	}
