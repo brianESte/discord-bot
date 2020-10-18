@@ -9,11 +9,10 @@ module.exports = {
 	args: true,
 	level: 1,
 	usage: 'updateTR "<trigger>" ["<response>"]',
-	helpMsg: '\
-updateTR "<trigger>" ["<response>"]\n\
-		Add / update/ remove a trigger response pair. If a response phrase is included, the pair will be added or if there is already a response for the given trigger, it will be overwritten with the new response. Omitting the response removes the pair indicated by the given trigger.\n\
-	<trigger>		The trigger phrase to be modified\n\
-	<response>		The bot\'s response to the given trigger phrase',
+	helpMsg: 'updateTR "<trigger>" ["<response>"]\n\n\
+	Add, update, or remove a trigger response pair. If a response phrase is included, the pair will be added or if there is already a response for the given trigger, it will be overwritten with the new response. Omitting the response removes the pair indicated by the given trigger.\n\n\
+<trigger>   	The trigger phrase to be modified\n\
+<response>  	The bot\'s response to the given trigger phrase',
 	execute(msg, args) {
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {			// if for some reason the guild file was not yet initialized...

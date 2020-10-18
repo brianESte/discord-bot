@@ -8,14 +8,15 @@ module.exports = {
 	args: true,			// size argument is required. safeplay arg is optional
 	level: 0,
 	usage: 'playSokoban <size> [<safe>]',
-	helpMsg: '\
-playSokoban <size> [<safe>]\n\
-		Start a game of emoji-Sokoban. Objective is to move the stones so that all buttons are covered. Points may* be awarded to users in a future update\n\
-	<size>			{small, medium, large}: field size. Default is small\n\
-					  small:  6x10, 1-2 stones\n\
-					  medium: 7x12, 1-3 stones\n\
-					  large:  8x14, 1-4 stones\n\
-	<safe>			safe argument allows only the caller to influence the game',
+	helpMsg: 'playSokoban <size> [<safe>]\n\
+\n\
+	Start a game of emoji-Sokoban. Objective is to move the stones so that all buttons are covered. Points may* be awarded to users in a future update\n\
+\n\
+<size>			{small, medium, large}: field size. Default is small\n\
+				  small:  6x10, 1-2 stones\n\
+				  medium: 7x12, 1-3 stones\n\
+				  large:  8x14, 1-4 stones\n\
+<safe>			safe argument allows only the caller to influence the game',
 	async execute(msg, args){
 		
 		const reacFilter = (reaction, user) => {

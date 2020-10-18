@@ -8,9 +8,10 @@ module.exports = {
 	args: false,
 	level: 1,
 	usage: 'listTR',
-	helpMsg: '\
-listTR\n\
-	List the local trigger response pairs. No argumnets required',
+	// a space before '\n' is needed so that listTR is not cutoff / omitted...
+	helpMsg: 'listTR \n\
+\n\
+	List the local trigger response pairs. No arguments required',
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {

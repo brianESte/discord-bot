@@ -1,4 +1,5 @@
 // reset local bot trob
+
 const fs = require('fs');
 
 module.exports = {
@@ -7,10 +8,11 @@ module.exports = {
 	args: true,		// ill probably make the user confirm they wish to reset the trob
 	level: 1,
 	usage: 'resetTR <yes>',
-	helpMsg: '\
-resetTR <yes>\n\
-		reset / clear the local trigger response pairs. Confirmation is required.\n\
-	<yes>		first argument must be "yes" to confirm the reset',
+	helpMsg: 'resetTR <yes>\n\
+\n\
+	clear the local trigger response pairs. Confirmation is required.\n\
+\n\
+<yes>		first argument must be "yes" to confirm the reset',
 	execute(msg, args) {
 		if(args[0].toLowerCase() != 'yes') return;
 		

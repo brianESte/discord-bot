@@ -10,7 +10,8 @@ module.exports = {
 	usage: 'listRCL',
 	// a space is needed before the '\n\'.. not sure why exactly..
 	helpMsg: "listRCL \n\
-	List each level and the roles associated with it. No argumnets required",
+\n\
+	List each level and the roles associated with it. No arguments required",
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {

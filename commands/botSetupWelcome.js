@@ -7,8 +7,10 @@ module.exports = {
 	args: false,
 	level: 0,
 	usage: 'botInfo',
-	helpMsg:'botInfo\n\
-	A tutorial sort of command. Designed to walk the server owner through setting the bot up and continued usage.',
+	// a space is needed before the '\n', otherwise botInfo will be cutoff...
+	helpMsg:'botInfo \n\
+\n\
+	A tutorial sort of command. Designed to walk the server owner through setting the bot up and continued usage. No arguments required.',
 	execute(msg, args) {
 		
 		msg.channel.send('Hello and welcome! Most likely, you are the server owner here to learn the ins and outs of your shiny new bot! \

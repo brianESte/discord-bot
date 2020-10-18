@@ -6,9 +6,10 @@ module.exports = {
 	args: true,
 	level: 1,
 	usage: 'delMsg <quantity> [user:<user> | bot]',
-	helpMsg: '\
-delMsg <quantity> [user:<user> | bot]\n\
+	helpMsg: 'delMsg <quantity> [user:<user> | bot]\n\
+\n\
 	Delete messages starting with the most recent one, filtered by the given arguments.\n\
+\n\
 <quantity>   	Number of messages to delete.\n\
 user:<user>  	Target the specified user\'s messages\n\
 <bot>			Target messages from bots',
