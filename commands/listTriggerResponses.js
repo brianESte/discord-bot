@@ -10,7 +10,7 @@ module.exports = {
 	usage: 'listTR',
 	helpMsg: '\
 listTR\n\
-		List the local trigger response pairs. No argumnets required',
+	List the local trigger response pairs. No argumnets required',
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {

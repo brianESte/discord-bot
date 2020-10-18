@@ -24,8 +24,9 @@ for(const file of cmdFiles){
 
 var globalResps = {};
 
+// read the global responses into an object.
 fs.readFile(grFname, 'utf8', (err, data) => {
-	if(err) {
+	if(err) {		// if there is no global response file, create one.
 		fs.appendFile(grFname, "", (err) => {
 			if(err) throw err;
 			console.log('New file created');
