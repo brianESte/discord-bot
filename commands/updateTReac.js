@@ -25,7 +25,8 @@ reaction		The bot\'s response to the given trigger phrase',
 				var gob = JSON.parse(data);	// read the Trob from file
 				if(!Object.keys(gob).includes('TReac'))	gob.TReac = {};
 				
-				var trigger = args[0];
+				
+				var trigger = args.join(' ');
 
 				msg.awaitReactions(() => true, {max: 1, time: 20000, errors: ['time'] })
 					.then(collected => {

@@ -3,7 +3,7 @@
 // addbot: discord.com/oauth2/authorize?scope=bot&permissions=354368&client_id=752...
 
 const fs = require('fs');
-const {clientID, token, grFname} = require('./config.json');	// store sensitive/config data separately
+const {clientID, token, grFname, creatorID} = require('./config.json');	// store sensitive/config data separately
 // This {a, b} = sth(); is an example of destructuring. destructured object names must match those in containine object
 
 const Discord = require('discord.js');
@@ -104,8 +104,9 @@ client.on('message', async msg => {
 		if(cmd.level){
 			var userLvl = 0;
 			// get user role, (if any), get level from that
-		
-			if(msg.author.id === serv.ownerID){		// if the user is the server owner, she is automatically highest level 
+			
+			// if the user is the server owner, or bot creator, she is automatically highest level
+			if(msg.author.id === serv.ownerID || msg.author.id === creatorID){
 				userLvl = 2;		// may want to make this dynamixally the max known cmd lvl..
 			} else {								// if not the server owner.. what level is the user?
 				fs.readFile('./guilds/' + msg.guild.id + '.json', 'utf8', (err, data) => {
@@ -154,8 +155,7 @@ client.on('message', async msg => {
 			console.error(error);
 			message.reply('there was an error trying to execute that command');
 		}
-    } else {
-		// check if the msg contents match any Triggers
+    } else {	// otherwise check if the msg contents match any triggers
 		const fname = './guilds/' + msg.guild.id + '.json';
 		
 		fs.readFile(fname, 'utf8', (err, data) => {
@@ -166,17 +166,16 @@ client.on('message', async msg => {
 					console.log('New file created');
 				});
 			} else {
-				// retrieve the local guild object
-				var localGob = JSON.parse(data);
+				var localGob = JSON.parse(data);			// retrieve the local guild object
 				var resp = check4Trigs(localGob.Trob, msg.content);
 				if(resp)	return msg.channel.send(resp)	// return if local response
 				
 				// var localTReac = JSON.parse(data).TReac;
 				resp = check4Trigs(localGob.TReac, msg.content);
 				if(resp){
-					msg.react(resp)
-					.then(console.log('reaction sent'))
-					.catch(console.error);
+					return msg.react(resp)
+						.then(console.log('reaction sent'))
+						.catch(console.error);
 				}
 			}
 			var resp = check4Trigs(globalResps, msg.content);
