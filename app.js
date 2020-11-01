@@ -36,7 +36,7 @@ fs.readFile(grFname, 'utf8', (err, data) => {
 	}
 });
 
-// this nifty function...
+// this nifty function checks some content against an object's keys
 function check4Trigs(trob, content){	
 	for(const nam in trob){
 		var re = nam.split('/');
@@ -56,7 +56,9 @@ client.once('ready', () => {
 
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
-		
+	
+	console.log(msg.author.presence);
+	
 	var serv = msg.channel.guild;
 	
 	// check that the writer of the message is subject to @everyone... for lvl purposes...
@@ -134,12 +136,14 @@ client.on('message', async msg => {
 			// console.log(`userLvl: ${userLvl}`);
 		}
 		// If the user requests help with a command, or attempts to use a command improperly,
-		// send the command's help message						*** considering removing the 'args' property... 
+		// send the command's help message						*** considering removing the 'args' property...	
+		
 		if((cmd.args && !args.length) || (args.length && args[0].toLowerCase() === 'help')){
 			// how to determine the msg sender's device within [mobile, web, desktop]
-			if(Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	// user is currently only on mobile...
-				return msg.channel.send(cmd.usage)				// send the cmd usage
-			} else {											// otherwise...
+			// apparently clientStatus can* be null... 		check if user is currently only on mobile...
+			if(msg.author.presence.clientStatus && Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	
+				return msg.channel.send(cmd.usage)					// send the cmd usage
+			} else {												// otherwise...
 				return msg.channel.send('```'+cmd.helpMsg+'```')	// send the full help message
 			}
 		}		
@@ -151,25 +155,33 @@ client.on('message', async msg => {
 			message.reply('there was an error trying to execute that command');
 		}
     } else {
-		// check if the msg contents match any Response Triggers
+		// check if the msg contents match any Triggers
 		const fname = './guilds/' + msg.guild.id + '.json';
 		
 		fs.readFile(fname, 'utf8', (err, data) => {
 			if(err) {
-				var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
+				var emptyGob = {clearance:{1:[]},info:{},TReac:{},Trob:{}};
 				fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
 					if(err) throw err;
 					console.log('New file created');
 				});
 			} else {
-				var localTrob = JSON.parse(data).Trob;
-				//console.log(localTrob);
-				var resp = check4Trigs(localTrob, msg.content);
+				// retrieve the local guild object
+				var localGob = JSON.parse(data);
+				var resp = check4Trigs(localGob.Trob, msg.content);
 				if(resp)	return msg.channel.send(resp)	// return if local response
+				
+				// var localTReac = JSON.parse(data).TReac;
+				resp = check4Trigs(localGob.TReac, msg.content);
+				if(resp){
+					msg.react(resp)
+					.then(console.log('reaction sent'))
+					.catch(console.error);
+				}
 			}
 			var resp = check4Trigs(globalResps, msg.content);
 			if(resp)	msg.channel.send(resp)	// global response
-		});	
+		});
 	}
 })
 
