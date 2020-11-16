@@ -32,7 +32,6 @@ list			list the current trigger reaction pairs',
 				var gob = JSON.parse(data);	// read the gob from file
 				if(!Object.keys(gob).includes('TReac'))	gob.TReac = {};
 				
-				// what state do the args come in?
 				var action = args.shift().toLowerCase();	// get the action from the first word in the args list
 				var trigger = args.join(' ');		// join the args into a single trigger phrase
 				
