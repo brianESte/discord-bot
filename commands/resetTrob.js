@@ -8,7 +8,7 @@ module.exports = {
 	args: true,		// ill probably make the user confirm they wish to reset the trob
 	level: 1,
 	usage: 'resetTR <yes>',
-	helpMsg: 'resetTR <yes>\n\
+	helpMsg: '\n\
 \n\
 	clear the local trigger response pairs. Confirmation is required.\n\
 \n\

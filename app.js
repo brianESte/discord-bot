@@ -57,7 +57,11 @@ client.once('ready', () => {
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
 	
-	console.log(msg.author.presence);
+	var auth = msg.author;
+	if(auth.presence.status == 'offline'){
+		//var date = new Date();
+		console.log(auth.username+ ' sent a message while offline at...\n'+ Date());//date.toTimeString() +' '+ date.toDateString());
+	}
 	
 	var serv = msg.channel.guild;
 	
@@ -70,8 +74,8 @@ client.on('message', async msg => {
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
 		msg.reply('Looks like you used the role-mention instead of the std mention!')
+		console.log('does this everrr get called?');
 	}
-	// from bdf: &757964913523163187
 	
 	// if the message starts by mentioning the bot...
 	if(msg.content.match(new RegExp('^<@!?'+clientID))){
@@ -145,7 +149,7 @@ client.on('message', async msg => {
 			if(msg.author.presence.clientStatus && Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	
 				return msg.channel.send(cmd.usage)					// send the cmd usage
 			} else {												// otherwise...
-				return msg.channel.send('```'+cmd.helpMsg+'```')	// send the full help message
+				return msg.channel.send('```Usage: ' +cmd.usage + cmd.helpMsg+ '```')	// send the full help message
 			}
 		}		
 		

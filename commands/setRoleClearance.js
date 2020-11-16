@@ -8,7 +8,7 @@ module.exports = {
 	args: true,
 	level: 2,
 	usage: 'setClearance <level> <+|-> <role>',
-	helpMsg: 'setClearance <level> <+|-> <role>\n\
+	helpMsg: '\n\
 \n\
 	Allows server owner to set a role\'s clearance level.\n\
 \n\

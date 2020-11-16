@@ -9,7 +9,7 @@ module.exports = {
 	level: 2,
 	usage: 'listRCL',
 	// a space is needed before the '\n\'.. not sure why exactly..
-	helpMsg: "listRCL \n\
+	helpMsg: " \n\
 \n\
 	List each level and the roles associated with it. No arguments required",
 	execute(msg, args){

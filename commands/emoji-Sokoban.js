@@ -8,7 +8,7 @@ module.exports = {
 	args: true,			// size argument is required. safeplay arg is optional
 	level: 0,
 	usage: 'playSokoban <size> [<safe>]',
-	helpMsg: 'playSokoban <size> [<safe>]\n\
+	helpMsg: '\n\
 \n\
 	Start a game of emoji-Sokoban. Objective is to move the stones so that all buttons are covered. Points may* be awarded to users in a future update\n\
 \n\
