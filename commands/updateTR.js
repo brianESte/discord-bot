@@ -11,7 +11,7 @@ module.exports = {
 	usage: 'updateTR <action> "<trigger>" ["<response>"]',
 	helpMsg: '\n\
 \n\
-	Add, update, or remove a trigger response pair. If a response phrase is included, the pair will be added or if there is already a response for the given trigger, it will be overwritten with the new response. Omitting the response removes the pair indicated by the given trigger.\n\
+	Trigger response pairs can be set, removed, cleared and listed. If a user sends a message containing a trigger, the bot will respond with the associated response.\n\
 \n\
 <trigger>   	The trigger phrase to be modified\n\
 <response>  	The bot\'s response to the given trigger phrase\n\
