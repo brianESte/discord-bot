@@ -1,4 +1,4 @@
-// addTrigResp.js
+// TriggerReaction.js
 // default is literal: haha -> /haha/
 
 const fs = require('fs');
@@ -29,20 +29,19 @@ list			list the current trigger reaction pairs',
 					console.log('New file created');
 				});
 			} else {
-				var gob = JSON.parse(data);	// read the Trob from file
+				var gob = JSON.parse(data);	// read the gob from file
 				if(!Object.keys(gob).includes('TReac'))	gob.TReac = {};
 				
 				// what state do the args come in?
 				var action = args.shift().toLowerCase();	// get the action from the first word in the args list
 				var trigger = args.join(' ');		// join the args into a single trigger phrase
 				
-				if(action === 'set'){
-					
+				if(action === 'set'){									// *** set ***
 					msg.awaitReactions(() => true, {max: 1, time: 20000, errors: ['time'] })
 						.then(collected => {
 							var emoji = collected.first().emoji;
-							if(emoji.id)	gob.TReac[trigger] = emoji.id;
-							else 			gob.TReac[trigger] = emoji.name;
+							if(emoji.id)	gob.TReac[trigger] = emoji.id;		// if it has an id (indicates custom emoji) store it
+							else 			gob.TReac[trigger] = emoji.name;	// otherwise store the name
 							
 							fs.writeFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(gob), (err) => {if(err) throw(err)});
 							msg.channel.send('Server file updated');
@@ -51,14 +50,19 @@ list			list the current trigger reaction pairs',
 						.catch(collected => {
 							console.log('This collected caught..:'+collected)
 						});
-				} else if(action === 'remove'){
+				} else if(action === 'remove'){							// *** remove ***
 					delete(gob.TReac[trigger]);
 					fs.writeFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(gob), (err) => {if(err) throw(err)});
 					msg.channel.send('Server file updated');
-				} else if(action === 'clear' && trigger === 'YES'){
+				} else if(action === 'clear' && trigger === 'YES'){		// *** clear ***
 					gob.TReac = {};
 					fs.writeFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(gob), (err) => {if(err) throw(err)});
 					msg.channel.send('Server file updated');
+				} else if(action === 'list'){							// *** list ***
+					for(const th in gob.TReac){
+						msg.channel.send(th)			// send the trigger in a message
+						  .then(sent => sent.react(gob.TReac[th]));	// then react to it with the associated reaction
+					}
 				}
 			}
 		});
