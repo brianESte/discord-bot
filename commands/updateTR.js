@@ -4,7 +4,7 @@
 const fs = require('fs');
 
 module.exports = {
-	name: 'updateTR',
+	name: 'updateTR',	// thinking of changing this to 'treply'
 	description: 'Set/remove/clear/list a trigger response pair',
 	args: true,
 	level: 1,
