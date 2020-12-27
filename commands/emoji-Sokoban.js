@@ -19,6 +19,9 @@ module.exports = {
 <safe>			safe argument allows only the caller to influence the game',
 	async execute(msg, args){
 		
+		//var date = new Date();
+		console.log(msg.author.username+ ' started playing Sokoban at...\n'+ Date());//date.toTimeString() +' '+ date.toDateString());
+		
 		const reacFilter = (reaction, user) => {
 			//console.log('user:');
 			//console.log(user);
@@ -298,10 +301,10 @@ module.exports = {
 		// start game
 		gameLoop(gameMsg).catch(collected => {
 			gameSys.active = false;
-			console.log('*****  Game ended with error(S) *****');
+			console.log('*****  Game ended with error(S) *****\nmost likely caused by game timeout.');
 			console.log('The last reaction collected was:');
 			console.log(collected);
-			msg.reply('It seems the game has ended... ');
+			msg.reply('It seems the game has ended / timed out... ');
 		});
 	}
 }
