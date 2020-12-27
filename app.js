@@ -49,7 +49,7 @@ function check4Trigs(trob, content){
 }
 
 client.once('ready', () => {
-    console.log(`Logged in a ${client.user.tag}!`);
+    console.log(`Logged in ${client.user.tag}!`);
     // client.user.setActivity('name', {type: 'WATCHING'}).catch(console.error);
     // types: playing, streaming, listening, watching, custom_status (not for bots)
 });
@@ -57,11 +57,13 @@ client.once('ready', () => {
 client.on('message', async msg => {
 	if(msg.author.bot) return;	// if a bot sent the message, ignore it.
 	
+	// not sure why the API is showing users as offline.. but so it goes. perhaps it is a bug...
+	/*
 	var auth = msg.author;
 	if(auth.presence.status == 'offline'){
 		//var date = new Date();
 		console.log(auth.username+ ' sent a message while offline at...\n'+ Date());//date.toTimeString() +' '+ date.toDateString());
-	}
+	}*/
 	
 	var serv = msg.channel.guild;
 	
@@ -177,9 +179,12 @@ client.on('message', async msg => {
 				// var localTReac = JSON.parse(data).TReac;
 				resp = check4Trigs(localGob.TReac, msg.content);
 				if(resp){
-					return msg.react(resp)
-						.then(console.log('reaction sent'))
-						.catch(console.error);
+					for(const reaction of resp){		// cycle through the array of reactions
+						msg.react(reaction)				// react with each one. hopefully in order...
+							.then()
+							.catch(console.error);
+					}
+					return console.log('reaction(s) sent in '+ serv.name +' : '+ msg.channel.name);
 				}
 			}
 			var resp = check4Trigs(globalResps, msg.content);

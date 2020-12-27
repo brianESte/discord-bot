@@ -1,10 +1,9 @@
 // TriggerReaction.js
-// default is literal: haha -> /haha/
 
 const fs = require('fs');
 
 module.exports = {
-	name: 'TReaction',		// short for Trigger Reaction. Does it need a better name?
+	name: 'treac',		// short for Trigger Reaction. Does it need a better name?
 	description: 'Modify the trigger reaction pair list',
 	args: true,
 	level: 1,
@@ -36,18 +35,23 @@ list			list the current trigger reaction pairs',
 				var trigger = args.join(' ');		// join the args into a single trigger phrase
 				
 				if(action === 'set'){									// *** set ***
-					msg.awaitReactions(() => true, {max: 1, time: 20000, errors: ['time'] })
+					var reactionList = [];
+					msg.awaitReactions(() => true, {time: 10000})		// max: 1, errors: ['time'], maxUsers: 1, 
 						.then(collected => {
-							var emoji = collected.first().emoji;
-							if(emoji.id)	gob.TReac[trigger] = emoji.id;		// if it has an id (indicates custom emoji) store it
-							else 			gob.TReac[trigger] = emoji.name;	// otherwise store the name
-							
+							for(const msgReac of collected.values()){
+								//console.log(msgReac.emoji);
+								//var emoji = collected.first().emoji;
+								if(msgReac.emoji.id)	reactionList.push(msgReac.emoji.id);		// if it has an id (indicates custom emoji) store it
+								else 			reactionList.push(msgReac.emoji.name);		// otherwise store the name
+							}
+							gob.TReac[trigger] = reactionList;			// store the array in the gob
 							fs.writeFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(gob), (err) => {if(err) throw(err)});
 							msg.channel.send('Server file updated');
 							// console.log(emoji);
 						})
 						.catch(collected => {
-							console.log('This collected caught..:'+collected)
+							console.log('This collected caught..:');
+							console.log(collected);
 						});
 				} else if(action === 'remove'){							// *** remove ***
 					delete(gob.TReac[trigger]);
@@ -58,9 +62,14 @@ list			list the current trigger reaction pairs',
 					fs.writeFile('./guilds/'+msg.guild.id+'.json', JSON.stringify(gob), (err) => {if(err) throw(err)});
 					msg.channel.send('Server file updated');
 				} else if(action === 'list'){							// *** list ***
-					for(const th in gob.TReac){
-						msg.channel.send(th)			// send the trigger in a message
-						  .then(sent => sent.react(gob.TReac[th]));	// then react to it with the associated reaction
+					for(const trigger in gob.TReac){
+						msg.channel.send(trigger)			// send the trigger to the channel
+							.then(sent => {
+								for(const reaction of gob.TReac[trigger]){	// react with each reaction in the reactList
+									sent.react(reaction)
+								}
+							});	// then react to it with the associated reaction
+						
 					}
 				}
 			}
