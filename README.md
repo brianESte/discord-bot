@@ -1,21 +1,29 @@
 # Discord bot
 
-This bot borrows / has features from other better known bots, such as Echo, MEE6, and the sokoban-Bot. Currently most change and progress goes into the emoji sokoban game. The inspiration / base idea for the Sokoban game comes from [here](https://www.youtube.com/watch?v=0fWdU8JCT6Y). Improvements over the base idea include:
-- editing the message instead of sending a new one each update
-- different field sizes
-- variable player icon (maybe?)
+This bot borrows / has features from other better known bots, such as [Echo](https://discord.bots.gg/bots/249891250117804032), and the sokoban-Bot. Current point of work is code cleanliness and naming consistency.
+May rename some commands to something more linuxy.
 
 Current Commands
 ---------------------------------------------
-- args-info
-  - Replies with information about the provided arguments
-- delMsg
+* botInfo
+  - Acts as a setup function to be run by the server owner / administrator
+  - Explains the basics of the bot
+* delMsg
   - Deletes messages determined by the given arguments
-- play
+* playSokoban
   - Starts a game of emoji-Sokoban
-- listTR
-  - List / display trigger response pairs
-- resetResponses
-  - Resets the local trigger-response object
-- updateTrigResp
-  - Add/remove/update a trigger response pair
+  - Based on the bot / project [seen here](https://www.youtube.com/watch?v=0fWdU8JCT6Y)
+  - Improvements include:
+	- Message edit on game update, instead of new message
+	- Variable playfield
+* setClearance
+  - set the clearance level for different server roles
+  - used to allow certain roles / members access to more commands
+* listRCL
+  - List clearance levels and the roles assocaited with them
+* updateTR
+  - Set / remove / clear a trigger response pair
+  - List the stored trigger response pairs
+* treac
+  - Set / remove / clear / list trigger reaction pairs
+  - accepts multiple emoji reactions
