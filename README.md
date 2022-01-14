@@ -16,12 +16,11 @@ Current Commands
   - Improvements include:
 	- Message edit on game update, instead of new message
 	- Variable playfield
-* setClearance
+* cl
+  - List clearance levels and the roles assocaited with them
   - set the clearance level for different server roles
   - used to allow certain roles / members access to more commands
-* listRCL
-  - List clearance levels and the roles assocaited with them
-* updateTR
+* tresp
   - Set / remove / clear a trigger response pair
   - List the stored trigger response pairs
 * treac

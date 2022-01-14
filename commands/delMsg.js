@@ -6,13 +6,12 @@ module.exports = {
 	args: true,
 	level: 1,
 	usage: 'delMsg <quantity> [user:<user> | bot]',
-	helpMsg: '\n\
-\n\
-	Delete messages starting with the most recent one, filtered by the given arguments.\n\
+	helpMsg: 
+"	Delete messages starting with the most recent one, filtered by the given arguments.\n\
 \n\
 <quantity>   	Number of messages to delete.\n\
 user:<user>  	Target the specified user\'s messages\n\
-<bot>			Target messages from bots',
+<bot>			Target messages from bots",
 	execute(msg, args){
 		if(!parseFloat(args[0]) || parseFloat(args[0]) < 1){
 			return msg.reply('First argument must be a number greater than 0');

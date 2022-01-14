@@ -8,6 +8,18 @@ const {clientID, token, grFname, creatorID} = require('./config.json');	// store
 
 const Discord = require('discord.js');
 
+// Function to handle message logging
+function logMsg(message, channel=null){
+	var dateOb = new Date();
+	var minutes = String(dateOb.getMinutes());
+	var output = dateOb.getDate()+'.'+(dateOb.getMonth() + 1)+'.'+dateOb.getFullYear()+' '+dateOb.getHours()+':'+minutes.padStart(2,'0');
+
+	if(channel != null)
+		output += ' in '+channel.name.slice(0,9) +', '+ channel.guild.name.slice(0, 9);
+	output += ': ' + message;
+	console.log(output);
+}
+
 const actOb = {presence:{activity:{name: 'you ;)', type: 'WATCHING'}}}
 
 const client = new Discord.Client(actOb);
@@ -29,7 +41,7 @@ fs.readFile(grFname, 'utf8', (err, data) => {
 	if(err) {		// if there is no global response file, create one.
 		fs.appendFile(grFname, "", (err) => {
 			if(err) throw err;
-			console.log('New file created');
+			logMsg("New global response file created");
 		});
 	} else {
 		globalResps = JSON.parse(data);
@@ -40,7 +52,7 @@ fs.readFile(grFname, 'utf8', (err, data) => {
 function check4Trigs(trob, content){	
 	for(const nam in trob){
 		var re = nam.split('/');
-		// console.log(re);
+
 		if(content.match(new RegExp(re[0], re[1]))){
 			return trob[nam];
 		}
@@ -49,7 +61,7 @@ function check4Trigs(trob, content){
 }
 
 client.once('ready', () => {
-    console.log(`Logged in ${client.user.tag}!`);
+    logMsg(`Logged in ${client.user.tag}!`);
     // client.user.setActivity('name', {type: 'WATCHING'}).catch(console.error);
     // types: playing, streaming, listening, watching, custom_status (not for bots)
 });
@@ -75,8 +87,9 @@ client.on('message', async msg => {
 	
 	// if someone accidently uses the role-mention...
 	if(msg.content.startsWith('<@&752547390871044218>') || msg.content.startsWith('<@&757964913523163187>')){
-		msg.reply('Looks like you used the role-mention instead of the std mention!')
-		console.log('does this everrr get called?');
+		msg.reply('Looks like you used the role-mention instead of the std mention!');
+		logMsg("role-mention used", msg.channel);
+		//console.log('does this everrr get called?');
 	}
 	
 	// if the message starts by mentioning the bot...
@@ -100,7 +113,7 @@ client.on('message', async msg => {
 		}
 				// this section feels like it could be cleaner
 		const cmdName = args.shift(); //.toLowerCase();		// do i want the commands to be case sensitive?
-		console.log(`Command: ${cmdName} with args: ${args}`);	// what exactly does the 'with' do?
+		logMsg(`Command: ${cmdName} with args: ${args}`, msg.channel);	// what exactly does the 'with' do?
 		
 		if(!client.commands.has(cmdName)) return;	// if no valid cmd given, return nothing. Might change this to also display valid commands
 		
@@ -120,7 +133,7 @@ client.on('message', async msg => {
 						var emptyGob = {clearance:{1:[]},info:{},Trob:{}};
 						fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
 							if(err) throw err;
-							console.log('New file created');
+							logMsg('New guild file created', msg.channel);
 						});
 					} else {
 						var clearances = JSON.parse(data).clearance;
@@ -151,7 +164,7 @@ client.on('message', async msg => {
 			if(msg.author.presence.clientStatus && Object.keys(msg.author.presence.clientStatus).every(k => k === 'mobile')){	
 				return msg.channel.send(cmd.usage)					// send the cmd usage
 			} else {												// otherwise...
-				return msg.channel.send('```Usage: ' +cmd.usage + cmd.helpMsg+ '```')	// send the full help message
+				return msg.channel.send('```Usage: ' +cmd.usage + '\n\n' + cmd.helpMsg+ '```')	// send the full help message
 			}
 		}		
 		
@@ -169,7 +182,7 @@ client.on('message', async msg => {
 				var emptyGob = {clearance:{1:[]},info:{},TReac:{},Trob:{}};
 				fs.appendFile(fname, JSON.stringify(emptyGob), (err) => {
 					if(err) throw err;
-					console.log('New file created');
+					logMsg("New guild file created", msg.channel);
 				});
 			} else {
 				var localGob = JSON.parse(data);			// retrieve the local guild object
@@ -184,7 +197,8 @@ client.on('message', async msg => {
 							.then()
 							.catch(console.error);
 					}
-					return console.log('reaction(s) sent in '+ serv.name +' : '+ msg.channel.name);
+					logMsg("reaction(s) sent", msg.channel);
+					return
 				}
 			}
 			var resp = check4Trigs(globalResps, msg.content);
