@@ -4,22 +4,22 @@
 const fs = require('fs');
 
 module.exports = {
-	name: 'setClearance',
+	name: 'cl',
 	description: 'set clearance level for various roles',
 	args: true,
 	level: 2,
 	usage: 'cl <action> [<level> <+|-> <role>]',
 	helpMsg: 
-	"	Server owner may list or change role clearance levels.\n\
-	\n\
-		action options\n\
-	list		List each level and the roles associated with it\n\
-	set     	Set a role's clearance level\n\
-		set level options\n\
-	<level> 	The clearance level whose roles will be updated\n\
-	<+|->   	+ assigns the given role to the given level\n\
+"	Server owner may list or change role clearance levels.\n\
+\n\
+	action options\n\
+list			List each level and the roles associated with it\n\
+set     		Set a role's clearance level\n\
+	set level options\n\
+<level> 		The clearance level whose roles will be updated\n\
+<+|->   		+ assigns the given role to the given level\n\
 				- removes the given role from the given level\n\
-	<role>  	The role to be assigned/lose a level",
+<role>  		The role to be assigned/lose a level",
 	execute(msg, args){
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {
@@ -53,6 +53,7 @@ module.exports = {
 					
 					var role = args.join(' ');
 					
+					// Perhaps there is a better way to handle this...
 					const checkRole = name => {
 						for(let [id, role] of msg.channel.guild.roles.cache){
 							if(role.name === name) return true

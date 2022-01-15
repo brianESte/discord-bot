@@ -5,24 +5,25 @@ May rename some commands to something more linuxy.
 
 Current Commands
 ---------------------------------------------
-* botInfo
-  - Acts as a setup function to be run by the server owner / administrator
-  - Explains the basics of the bot
+* welcome
+  - Introduces the bot and its basic functions
 * delMsg
   - Deletes messages determined by the given arguments
+  - Can target messages from a specific user or bots
 * playSokoban
   - Starts a game of emoji-Sokoban
   - Based on the bot / project [seen here](https://www.youtube.com/watch?v=0fWdU8JCT6Y)
   - Improvements include:
-	- Message edit on game update, instead of new message
-	- Variable playfield
+    - Message edit on game update, instead of new message
+    - Variable playfield
 * cl
   - List clearance levels and the roles assocaited with them
-  - set the clearance level for different server roles
-  - used to allow certain roles / members access to more commands
+  - Set the clearance level for different server roles
+  - Used to allow certain roles / members access to more commands
 * tresp
   - Set / remove / clear a trigger response pair
   - List the stored trigger response pairs
 * treac
   - Set / remove / clear / list trigger reaction pairs
-  - accepts multiple emoji reactions
+  - Accepts multiple emoji reactions
+

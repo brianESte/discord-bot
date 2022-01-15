@@ -7,17 +7,18 @@ module.exports = {
 	description: 'Modify the trigger reaction pair list',
 	args: true,
 	level: 1,
-	usage: 'TReaction <action> "<trigger>" [msg reaction]',
+	usage: 'treac <action> ["<trigger>" [msg reaction]]',
 	helpMsg:
 "	Set or remove a trigger reaction pair, or clear all reaction pairs. To add or update the reaction to a trigger, react to your sent message with the desired reaction(s). The reaction(s) will overwrite any existing reaction for that trigger. The command times out 15s after the last reaction.\n\
 \n\
-<trigger>   	The trigger phrase to be modified\n\
-reaction(s)		The bot\'s response to the given trigger phrase\n\
 	action options\n\
-set				set the reactions to the provided trigger. Overwrites any existing reactions.\n\
-remove			remove the trigger and associated reactions\n\
-clear			remove all triggers from listing. Requires confirmation\n\
-list			list the current trigger reaction pairs",
+clear   		remove all triggers from listing. Requires confirmation\n\
+list			list the current trigger reaction pairs\n\
+remove  		remove the trigger and associated reactions\n\
+set     		set the reactions to the provided trigger. Overwrites any existing reactions.\n\
+	remove / set options\n\
+<trigger>   	The trigger phrase to be modified\n\
+reaction(s)     The bot's response to the given trigger phrase",
 	execute(msg, args) {
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {			// if for some reason the guild file was not yet initialized...

@@ -1,17 +1,16 @@
-// args-info.js
-// the command file for the args info discobot cmd
+// botSetupWelcome.js
+// command for the bot to basically introduce itself
 
 module.exports = {
-	name: 'botInfo',
+	name: 'welcome',
 	description: 'Run Me. Tutorial command that explains what the bot can do',
 	args: false,
 	level: 0,
-	usage: 'botInfo',
+	usage: 'welcome',
 	// a space is needed before the '\n', otherwise botInfo will be cutoff...
 	helpMsg:
 "	A tutorial sort of command. Designed to walk the server owner through setting the bot up and continued usage. No arguments required.",
-	execute(msg, args) {
-		
+	execute(msg, args) {	
 		msg.channel.send('Hello and welcome! Most likely, you are the server owner here to learn the ins and outs of your shiny new bot! \
 As you have learned by now, commands follow the basic format of:\n\
 \n\

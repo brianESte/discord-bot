@@ -4,21 +4,21 @@
 const fs = require('fs');
 
 module.exports = {
-	name: 'updateTR',	// thinking of changing this to 'treply'
+	name: 'tresp',	// thinking of changing this to 'treply'
 	description: 'Set/remove/clear/list a trigger response pair',
 	args: true,
 	level: 1,
-	usage: 'updateTR <action> ["<trigger>" ["<response>"]]',
+	usage: 'tresp <action> ["<trigger>" ["<response>"]]',
 	helpMsg:
 "	Trigger response pairs can be set, removed, cleared and listed. If a user sends a message containing a trigger, the bot will respond with the associated response.\n\
 \n\
 <trigger>   	The trigger phrase to be modified\n\
 <response>  	The bot\'s response to the given trigger phrase\n\
 	action options\n\
-set				set a response to the provided trigger. Overwrites any existing response.\n\
-remove			remove the trigger and associated response\n\
-clear			remove all triggers from listing. Requires confirmation\n\
-list			list the current trigger response pairs",
+set     		set a response to the provided trigger. Overwrites any existing response.\n\
+remove  		remove the trigger and associated response\n\
+clear   		remove all triggers from listing. Requires confirmation\n\
+list    		list the current trigger response pairs",
 	execute(msg, args) {
 		fs.readFile('./guilds/'+msg.guild.id+'.json', 'utf8', (err, data) => {
 			if(err) {			// if for some reason the guild file was not yet initialized...
